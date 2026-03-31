@@ -27,13 +27,13 @@ The filter buttons `4/1`, `4/2`, and `有空再去` (Visit when free) are **hard
 ## Roadmap / Planned Features
 
 - [ ] **User-defined tags** — Replace hardcoded batch filters with a flexible tagging system that lets users create and assign custom labels to fit their own schedule.
-- [ ] **Multi-region support** — Expand coverage beyond the SJSU/Bay Area and allow users to filter or switch between different locations.
-- [ ] **Automated data updates** — Automatically scrape each brand's official website to keep offer details, eligibility requirements, and validity windows up to date.
-- [ ] **Signup deadline calculator** — Let users enter their birthday and automatically compute the latest possible signup date for each brand (e.g., 7/14/30 days before birthday requirements).
-- [ ] **Personal redemption tracker** — Allow users to mark offers as redeemed and track progress across their birthday month.
 - [ ] **Add/edit entries in UI** — Provide a form-based interface to add or edit freebies without modifying source code.
-- [ ] **Export options** — Export filtered results to CSV or a print-friendly view for offline planning.
+- [ ] **Signup deadline calculator** — Let users enter their birthday and automatically compute the latest possible signup date for each brand (e.g., 7/14/30 days before birthday requirements).
+- [ ] **Multi-region support** — Expand coverage beyond the SJSU/Bay Area and allow users to filter or switch between different locations.
+- [ ] **Personal redemption tracker** — Allow users to mark offers as redeemed and track progress across their birthday month.
 - [ ] **Reminder notifications** — Notify users before key deadlines (signup cutoff or redemption expiry), such as via browser notifications.
+- [ ] **Export options** — Export filtered results to CSV or a print-friendly view for offline planning.
+- [ ] **Automated data updates** — Automatically scrape each brand's official website to keep offer details, eligibility requirements, and validity windows up to date.
 
 ## Data Source
 
