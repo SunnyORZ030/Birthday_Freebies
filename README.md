@@ -27,3 +27,7 @@ The filter buttons `4/1`, `4/2`, and `有空再去` (Visit when free) are **hard
 ## Data Source
 
 Based on each brand's official Rewards program terms, last updated March 2026.
+
+## Disclaimer
+
+Offer terms, eligibility requirements, and validity windows are subject to change at any time without notice. The information in this tracker is provided for reference only. Always verify the latest details directly with each brand's official website or app before visiting.
