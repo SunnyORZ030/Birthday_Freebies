@@ -24,6 +24,12 @@ Currently tracks **~30 brands**, including Starbucks, Sephora, Chipotle, Cheesec
 
 The filter buttons `4/1`, `4/2`, and `有空再去` (Visit when free) are **hardcoded pickup batches set by the author** for personal planning purposes — they reflect which stores the author planned to visit on specific dates. These labels are not part of the core data model and are **not intended to be permanent**. A future version will remove hardcoded batches and replace them with a user-defined tagging system, allowing anyone to create and assign custom labels to fit their own schedule.
 
+## Roadmap / Planned Features
+
+- [ ] **User-defined tags** — Replace hardcoded batch filters with a flexible tagging system that lets users create and assign custom labels to fit their own schedule.
+- [ ] **Multi-region support** — Expand coverage beyond the SJSU/Bay Area and allow users to filter or switch between different locations.
+- [ ] **Automated data updates** — Automatically scrape each brand's official website to keep offer details, eligibility requirements, and validity windows up to date.
+
 ## Data Source
 
 Based on each brand's official Rewards program terms, last updated March 2026.
