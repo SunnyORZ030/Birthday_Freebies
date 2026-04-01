@@ -16,11 +16,11 @@ tr:last-child td { border-bottom: none; }
 tr:hover td { background: var(--color-background-secondary); }
 tr.updated-row td { background: #FAEEDA22; }
 .badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 500; white-space: nowrap; }
-.cp-高 { background: #EAF3DE; color: #27500A; }
-.cp-中 { background: #FAEEDA; color: #633806; }
-.cp-低 { background: #FCEBEB; color: #791F1F; }
-.dist-近 { color: #1D9E75; font-weight: 500; }
-.dist-中 { color: #BA7517; font-weight: 500; }
+.cp-high { background: #EAF3DE; color: #27500A; }
+.cp-medium { background: #FAEEDA; color: #633806; }
+.cp-low { background: #FCEBEB; color: #791F1F; }
+.dist-near { color: #1D9E75; font-weight: 500; }
+.dist-medium { color: #BA7517; font-weight: 500; }
 .cat-food { background: #FBEAF0; color: #72243E; }
 .cat-drink { background: #E6F1FB; color: #0C447C; }
 .cat-dessert { background: #EEEDFE; color: #3C3489; }
@@ -31,22 +31,22 @@ tr.updated-row td { background: #FAEEDA22; }
 <div class="wrap">
 <div class="filters">
   <select id="regionSelect" class="region-select" onchange="changeRegion(this.value)"></select>
-  <button id="allBtn" class="filter-btn active" onclick="filter('all',this)">全部</button>
-  <button class="filter-btn" onclick="filter('food',this)">餐廳/速食</button>
-  <button class="filter-btn" onclick="filter('drink',this)">飲料/咖啡</button>
-  <button class="filter-btn" onclick="filter('dessert',this)">甜點/冰品</button>
-  <button class="filter-btn" onclick="filter('beauty',this)">美妝/零售</button>
-  <button class="filter-btn" onclick="filter('高',this)">高 CP 值</button>
-  <button class="filter-btn" onclick="filter('中',this)">中 CP 值</button>
+  <button id="allBtn" class="filter-btn active" onclick="filter('all',this)">All</button>
+  <button class="filter-btn" onclick="filter('food',this)">Food / Fast Food</button>
+  <button class="filter-btn" onclick="filter('drink',this)">Drinks / Coffee</button>
+  <button class="filter-btn" onclick="filter('dessert',this)">Dessert / Ice Cream</button>
+  <button class="filter-btn" onclick="filter('beauty',this)">Beauty / Retail</button>
+  <button class="filter-btn" onclick="filter('cp-high',this)">High Value</button>
+  <button class="filter-btn" onclick="filter('cp-medium',this)">Medium Value</button>
   <button class="filter-btn" onclick="filter('4/1',this)">4/1</button>
   <button class="filter-btn" onclick="filter('4/2',this)">4/2</button>
-  <button class="filter-btn" onclick="filter('有空再去',this)">有空再去</button>
+  <button class="filter-btn" onclick="filter('batch-flex',this)">Flexible</button>
 </div>
 <div style="overflow-x:auto;">
 <table>
 <thead>
 <tr>
-  <th>店名</th><th>類別</th><th>贈送物品</th><th>需會員？</th><th>領取期限</th><th>CP值</th><th>距SJSU</th>
+  <th>Store</th><th>Category</th><th>Freebie</th><th>Membership Required?</th><th>Redemption Window</th><th>Value</th><th>Distance to SJSU</th>
 </tr>
 </thead>
 <tbody id="tbody"></tbody>
@@ -59,11 +59,18 @@ const regionLabels = {
 };
 let currentRegion = 'bay_area';
 let data = regionData[currentRegion] || [];
+const CP_HIGH = '\u9AD8';
+const CP_MEDIUM = '\u4E2D';
+const CP_LOW = '\u4F4E';
+const DIST_NEAR = '\u8FD1';
+const DIST_MEDIUM = '\u4E2D';
+const DIST_FAR = '\u9060';
+const BATCH_FLEX = '\u6709\u7A7A\u518D\u53BB';
 
 let current = 'all';
 function updateAllButtonCount() {
   const allBtn = document.getElementById('allBtn');
-  if (allBtn) allBtn.textContent = `全部 (${data.length})`;
+  if (allBtn) allBtn.textContent = `All (${data.length})`;
 }
 function resetActiveFilter() {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -94,16 +101,29 @@ function initRegions() {
   data = regionData[currentRegion] || [];
 }
 function catLabel(c) {
-  return { food:'餐廳/速食', drink:'飲料/咖啡', dessert:'甜點/冰品', beauty:'美妝/零售' }[c] || c;
+  return { food:'Food / Fast Food', drink:'Drinks / Coffee', dessert:'Dessert / Ice Cream', beauty:'Beauty / Retail' }[c] || c;
+}
+function cpLabel(cp) {
+  return { [CP_HIGH]:'High', [CP_MEDIUM]:'Medium', [CP_LOW]:'Low' }[cp] || cp;
+}
+function cpClass(cp) {
+  return { [CP_HIGH]:'high', [CP_MEDIUM]:'medium', [CP_LOW]:'low' }[cp] || 'medium';
+}
+function distLabel(dist) {
+  return { [DIST_NEAR]:'Near', [DIST_MEDIUM]:'Medium', [DIST_FAR]:'Far' }[dist] || dist;
+}
+function distClass(dist) {
+  return { [DIST_NEAR]:'near', [DIST_MEDIUM]:'medium', [DIST_FAR]:'far' }[dist] || 'medium';
 }
 function render() {
-  const cpRank = { 高: 3, 中: 2, 低: 1 };
-  const distRank = { 近: 3, 中: 2, 遠: 1 };
+  const cpRank = { [CP_HIGH]: 3, [CP_MEDIUM]: 2, [CP_LOW]: 1 };
+  const distRank = { [DIST_NEAR]: 3, [DIST_MEDIUM]: 2, [DIST_FAR]: 1 };
   const rows = data.filter(d => {
     if (current === 'all') return true;
-    if (current === '高') return d.cp === '高';
-    if (current === '中') return d.cp === '中';
-    if (current === '4/1' || current === '4/2' || current === '有空再去') return d.batch === current;
+    if (current === 'cp-high') return d.cp === CP_HIGH;
+    if (current === 'cp-medium') return d.cp === CP_MEDIUM;
+    if (current === '4/1' || current === '4/2') return d.batch === current;
+    if (current === 'batch-flex') return d.batch === BATCH_FLEX;
     if (current === 'updated') return d.u;
     return d.cat === current;
   }).sort((a, b) => {
@@ -112,7 +132,7 @@ function render() {
     return (distRank[b.dist] || 0) - (distRank[a.dist] || 0);
   });
   const tbody = document.getElementById('tbody');
-  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--color-text-tertiary)">沒有符合條件的項目</td></tr>'; return; }
+  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--color-text-tertiary)">No matching entries found.</td></tr>'; return; }
   tbody.innerHTML = rows.map(d => {
     return `<tr class="${d.u ? 'updated-row' : ''}">
       <td>
@@ -123,8 +143,8 @@ function render() {
       <td style="max-width:190px;font-size:12px">${d.item}</td>
       <td style="font-size:12px">${d.member}</td>
       <td style="white-space:nowrap;font-size:12px">${d.window}</td>
-      <td><span class="badge cp-${d.cp}">${d.cp}</span></td>
-      <td class="dist-${d.dist}">${d.dist}</td>
+      <td><span class="badge cp-${cpClass(d.cp)}">${cpLabel(d.cp)}</span></td>
+      <td class="dist-${distClass(d.dist)}">${distLabel(d.dist)}</td>
     </tr>`;
   }).join('');
 }
