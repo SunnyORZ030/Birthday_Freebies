@@ -1,8 +1,8 @@
-
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 .wrap { padding: 1rem 0; }
 .filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1rem; }
+.region-select { padding: 5px 10px; border-radius: 8px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-primary); font-size: 13px; }
 .filter-btn { padding: 5px 12px; border-radius: 20px; border: 0.5px solid var(--color-border-secondary); background: var(--color-background-primary); color: var(--color-text-secondary); font-size: 13px; cursor: pointer; transition: all 0.15s; }
 .filter-btn.active { background: var(--color-background-info); color: var(--color-text-info); border-color: transparent; font-weight: 500; }
 .filter-btn:hover { background: var(--color-background-secondary); }
@@ -30,7 +30,8 @@ tr.updated-row td { background: #FAEEDA22; }
 </style>
 <div class="wrap">
 <div class="filters">
-  <button class="filter-btn active" onclick="filter('all',this)">全部 (28)</button>
+  <select id="regionSelect" class="region-select" onchange="changeRegion(this.value)"></select>
+  <button id="allBtn" class="filter-btn active" onclick="filter('all',this)">全部</button>
   <button class="filter-btn" onclick="filter('food',this)">餐廳/速食</button>
   <button class="filter-btn" onclick="filter('drink',this)">飲料/咖啡</button>
   <button class="filter-btn" onclick="filter('dessert',this)">甜點/冰品</button>
@@ -52,14 +53,45 @@ tr.updated-row td { background: #FAEEDA22; }
 </table>
 <script src="freebies-data.js"></script>
 <script>
-const data = window.BIRTHDAY_FREEBIES_DATA || [];
+const regionData = window.BIRTHDAY_FREEBIES_DATA_BY_REGION || { bay_area: window.BIRTHDAY_FREEBIES_DATA || [] };
+const regionLabels = {
+  bay_area: 'Bay Area (SJSU)'
+};
+let currentRegion = 'bay_area';
+let data = regionData[currentRegion] || [];
 
 let current = 'all';
+function updateAllButtonCount() {
+  const allBtn = document.getElementById('allBtn');
+  if (allBtn) allBtn.textContent = `全部 (${data.length})`;
+}
+function resetActiveFilter() {
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  const allBtn = document.getElementById('allBtn');
+  if (allBtn) allBtn.classList.add('active');
+}
+function changeRegion(regionKey) {
+  currentRegion = regionKey;
+  data = regionData[currentRegion] || [];
+  current = 'all';
+  resetActiveFilter();
+  updateAllButtonCount();
+  render();
+}
 function filter(key, btn) {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   current = key;
   render();
+}
+function initRegions() {
+  const select = document.getElementById('regionSelect');
+  const keys = Object.keys(regionData);
+  if (!keys.length || !select) return;
+  select.innerHTML = keys.map(k => `<option value="${k}">${regionLabels[k] || k}</option>`).join('');
+  if (!regionData[currentRegion]) currentRegion = keys[0];
+  select.value = currentRegion;
+  data = regionData[currentRegion] || [];
 }
 function catLabel(c) {
   return { food:'餐廳/速食', drink:'飲料/咖啡', dessert:'甜點/冰品', beauty:'美妝/零售' }[c] || c;
@@ -96,5 +128,7 @@ function render() {
     </tr>`;
   }).join('');
 }
+initRegions();
+updateAllButtonCount();
 render();
 </script>

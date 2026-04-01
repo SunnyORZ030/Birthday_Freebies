@@ -1,4 +1,5 @@
-window.BIRTHDAY_FREEBIES_DATA = [
+window.BIRTHDAY_FREEBIES_DATA_BY_REGION = {
+  bay_area: [
   { name:"Starbucks", cat:"drink", batch:"4/2", u:false, item:"任何手工飲品或食品（任意尺寸）", member:"需要（Rewards App）", window:"Green：當天｜Gold：7天｜Reserve：30天", cp:"高", dist:"近", note:"依帳號等級領取期限不同"},
   { name:"Dutch Bros", cat:"drink", batch:"4/2", u:true, item:"任意尺寸飲品（免費）", member:"需要（Dutch Rewards App）", window:"生日當天加入帳號後 30 天有效", cp:"高", dist:"近", note:"San Jose 多間門市；條件最寬鬆"},
   { name:"Dunkin'", cat:"drink", batch:"4/2", u:true, item:"免費任意尺寸飲品（非三倍點數）", member:"需要（Rewards App）；需前 6 個月有至少 1 筆消費", window:"生日當天、前一天、後一天，共 3 天", cp:"中", dist:"近", note:"2026 年起需有帳號活動紀錄才能領取"},
@@ -29,4 +30,7 @@ window.BIRTHDAY_FREEBIES_DATA = [
   { name:"Regal Cinemas", cat:"food", u:false, item:"免費爆米花一份", member:"需要（Regal Crown Club，免費）", window:"生日月份", cp:"高", dist:"近", note:"爆米花約 $8–10"},
   { name:"Chicha San Chen", cat:"drink", batch:"4/2", u:false, item:"無限買一送一", member:"不需要（要出示ID）", window:"生日當天", cp:"高", dist:"近", note:"" },
   { name:"Feng Cha", cat:"drink", batch:"4/1", u:true, item:"免費一杯飲料", member:"需要", window:"生日月", cp:"高", dist:"中", note:"" }
-];
+  ]
+};
+
+window.BIRTHDAY_FREEBIES_DATA = window.BIRTHDAY_FREEBIES_DATA_BY_REGION.bay_area;
