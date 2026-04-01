@@ -248,6 +248,14 @@ function localizeContentText(text) {
   });
   return output;
 }
+function getLocalizedField(entry, fieldName) {
+  const localeSuffix = currentLocale === 'zh' ? '_zh' : '_en';
+  const preferred = entry[fieldName + localeSuffix];
+  if (typeof preferred === 'string' && preferred.length > 0) return preferred;
+  const base = entry[fieldName];
+  if (currentLocale === 'en') return localizeContentText(base);
+  return base;
+}
 function render() {
   const cpRank = { [CP_HIGH]: 3, [CP_MEDIUM]: 2, [CP_LOW]: 1 };
   const distRank = { [DIST_NEAR]: 3, [DIST_MEDIUM]: 2, [DIST_FAR]: 1 };
@@ -269,13 +277,13 @@ function render() {
   tbody.innerHTML = rows.map(d => {
     return `<tr class="${d.u ? 'updated-row' : ''}">
       <td>
-        <div class="store-name">${localizeContentText(d.name)}</div>
-        <div class="note">${localizeContentText(d.note)}</div>
+        <div class="store-name">${getLocalizedField(d, 'name')}</div>
+        <div class="note">${getLocalizedField(d, 'note') || ''}</div>
       </td>
       <td><span class="badge cat-${d.cat}">${catLabel(d.cat)}</span></td>
-      <td style="max-width:190px;font-size:12px">${localizeContentText(d.item)}</td>
-      <td style="font-size:12px">${localizeContentText(d.member)}</td>
-      <td style="white-space:nowrap;font-size:12px">${localizeContentText(d.window)}</td>
+      <td style="max-width:190px;font-size:12px">${getLocalizedField(d, 'item')}</td>
+      <td style="font-size:12px">${getLocalizedField(d, 'member')}</td>
+      <td style="white-space:nowrap;font-size:12px">${getLocalizedField(d, 'window')}</td>
       <td><span class="badge cp-${cpClass(d.cp)}">${cpLabel(d.cp)}</span></td>
       <td class="dist-${distClass(d.dist)}">${distLabel(d.dist)}</td>
     </tr>`;
