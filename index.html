@@ -1,3 +1,9 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Birthday Freebies Tracker</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 .wrap { padding: 1rem 0; }
@@ -28,6 +34,8 @@ tr.updated-row td { background: #FAEEDA22; }
 .store-name { font-weight: 500; display: flex; align-items: center; gap: 5px; }
 .note { font-size: 11px; color: var(--color-text-tertiary); margin-top: 2px; }
 </style>
+</head>
+<body>
 <div class="wrap">
 <div class="filters">
   <select id="regionSelect" class="region-select" onchange="changeRegion(this.value)"></select>
@@ -51,7 +59,7 @@ tr.updated-row td { background: #FAEEDA22; }
 </thead>
 <tbody id="tbody"></tbody>
 </table>
-<script src="freebies-data.js"></script>
+<script src="freebies-data.js" charset="UTF-8"></script>
 <script>
 const regionData = window.BIRTHDAY_FREEBIES_DATA_BY_REGION || { bay_area: window.BIRTHDAY_FREEBIES_DATA || [] };
 const regionLabels = {
@@ -152,3 +160,5 @@ initRegions();
 updateAllButtonCount();
 render();
 </script>
+</body>
+</html>
