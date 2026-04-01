@@ -40,21 +40,21 @@ tr.updated-row td { background: #FAEEDA22; }
 <div class="filters">
   <select id="regionSelect" class="region-select" onchange="changeRegion(this.value)"></select>
   <button id="allBtn" class="filter-btn active" onclick="filter('all',this)">All</button>
-  <button class="filter-btn" onclick="filter('food',this)">Food / Fast Food</button>
-  <button class="filter-btn" onclick="filter('drink',this)">Drinks / Coffee</button>
-  <button class="filter-btn" onclick="filter('dessert',this)">Dessert / Ice Cream</button>
-  <button class="filter-btn" onclick="filter('beauty',this)">Beauty / Retail</button>
-  <button class="filter-btn" onclick="filter('cp-high',this)">High Value</button>
-  <button class="filter-btn" onclick="filter('cp-medium',this)">Medium Value</button>
+  <button id="foodBtn" class="filter-btn" onclick="filter('food',this)">Food / Fast Food</button>
+  <button id="drinkBtn" class="filter-btn" onclick="filter('drink',this)">Drinks / Coffee</button>
+  <button id="dessertBtn" class="filter-btn" onclick="filter('dessert',this)">Dessert / Ice Cream</button>
+  <button id="beautyBtn" class="filter-btn" onclick="filter('beauty',this)">Beauty / Retail</button>
+  <button id="cpHighBtn" class="filter-btn" onclick="filter('cp-high',this)">High Value</button>
+  <button id="cpMediumBtn" class="filter-btn" onclick="filter('cp-medium',this)">Medium Value</button>
   <button class="filter-btn" onclick="filter('4/1',this)">4/1</button>
   <button class="filter-btn" onclick="filter('4/2',this)">4/2</button>
-  <button class="filter-btn" onclick="filter('batch-flex',this)">Flexible</button>
+  <button id="batchFlexBtn" class="filter-btn" onclick="filter('batch-flex',this)">Flexible</button>
 </div>
 <div style="overflow-x:auto;">
 <table>
 <thead>
 <tr>
-  <th>Store</th><th>Category</th><th>Freebie</th><th>Membership Required?</th><th>Redemption Window</th><th>Value</th><th>Distance to SJSU</th>
+  <th id="thStore">Store</th><th id="thCategory">Category</th><th id="thFreebie">Freebie</th><th id="thMember">Membership Required?</th><th id="thWindow">Redemption Window</th><th id="thValue">Value</th><th id="thDistance">Distance to SJSU</th>
 </tr>
 </thead>
 <tbody id="tbody"></tbody>
@@ -62,8 +62,71 @@ tr.updated-row td { background: #FAEEDA22; }
 <script src="freebies-data.js" charset="UTF-8"></script>
 <script>
 const regionData = window.BIRTHDAY_FREEBIES_DATA_BY_REGION || { bay_area: window.BIRTHDAY_FREEBIES_DATA || [] };
-const regionLabels = {
-  bay_area: 'Bay Area (SJSU)'
+const REGION_LABELS = {
+  bay_area: {
+    en: 'Bay Area (SJSU)',
+    zh: '\u7063\u5340 (SJSU)'
+  }
+};
+const I18N = {
+  en: {
+    pageTitle: 'Birthday Freebies Tracker',
+    all: 'All',
+    foodBtn: 'Food / Fast Food',
+    drinkBtn: 'Drinks / Coffee',
+    dessertBtn: 'Dessert / Ice Cream',
+    beautyBtn: 'Beauty / Retail',
+    cpHighBtn: 'High Value',
+    cpMediumBtn: 'Medium Value',
+    batchFlexBtn: 'Flexible',
+    thStore: 'Store',
+    thCategory: 'Category',
+    thFreebie: 'Freebie',
+    thMember: 'Membership Required?',
+    thWindow: 'Redemption Window',
+    thValue: 'Value',
+    thDistance: 'Distance to SJSU',
+    noResults: 'No matching entries found.',
+    cat_food: 'Food / Fast Food',
+    cat_drink: 'Drinks / Coffee',
+    cat_dessert: 'Dessert / Ice Cream',
+    cat_beauty: 'Beauty / Retail',
+    cpHigh: 'High',
+    cpMedium: 'Medium',
+    cpLow: 'Low',
+    distNear: 'Near',
+    distMedium: 'Medium',
+    distFar: 'Far'
+  },
+  zh: {
+    pageTitle: '\u751F\u65E5\u512A\u60E0\u8FFD\u8E64\u8868',
+    all: '\u5168\u90E8',
+    foodBtn: '\u9910\u5EF3/\u901F\u98DF',
+    drinkBtn: '\u98F2\u6599/\u5496\u5561',
+    dessertBtn: '\u751C\u9EDE/\u51B0\u54C1',
+    beautyBtn: '\u7F8E\u599D/\u96F6\u552E',
+    cpHighBtn: '\u9AD8 CP \u503C',
+    cpMediumBtn: '\u4E2D CP \u503C',
+    batchFlexBtn: '\u6709\u7A7A\u518D\u53BB',
+    thStore: '\u5E97\u540D',
+    thCategory: '\u985E\u5225',
+    thFreebie: '\u8D08\u9001\u7269\u54C1',
+    thMember: '\u9700\u6703\u54E1\uFF1F',
+    thWindow: '\u9818\u53D6\u671F\u9650',
+    thValue: 'CP\u503C',
+    thDistance: '\u8DDD SJSU',
+    noResults: '\u6C92\u6709\u7B26\u5408\u689D\u4EF6\u7684\u9805\u76EE',
+    cat_food: '\u9910\u5EF3/\u901F\u98DF',
+    cat_drink: '\u98F2\u6599/\u5496\u5561',
+    cat_dessert: '\u751C\u9EDE/\u51B0\u54C1',
+    cat_beauty: '\u7F8E\u599D/\u96F6\u552E',
+    cpHigh: '\u9AD8',
+    cpMedium: '\u4E2D',
+    cpLow: '\u4F4E',
+    distNear: '\u8FD1',
+    distMedium: '\u4E2D',
+    distFar: '\u9060'
+  }
 };
 let currentRegion = 'bay_area';
 let data = regionData[currentRegion] || [];
@@ -74,11 +137,34 @@ const DIST_NEAR = '\u8FD1';
 const DIST_MEDIUM = '\u4E2D';
 const DIST_FAR = '\u9060';
 const BATCH_FLEX = '\u6709\u7A7A\u518D\u53BB';
+let currentLocale = 'en';
 
 let current = 'all';
+function detectLocale() {
+  const raw = ((navigator.languages && navigator.languages[0]) || navigator.language || 'en').toLowerCase();
+  return raw.startsWith('zh') ? 'zh' : 'en';
+}
+function t(key) {
+  return (I18N[currentLocale] && I18N[currentLocale][key]) || I18N.en[key] || key;
+}
+function regionLabel(regionKey) {
+  const label = REGION_LABELS[regionKey];
+  if (!label) return regionKey;
+  return label[currentLocale] || label.en || regionKey;
+}
+function applyI18nText() {
+  document.documentElement.lang = currentLocale === 'zh' ? 'zh-Hant' : 'en';
+  document.title = t('pageTitle');
+  const ids = ['foodBtn', 'drinkBtn', 'dessertBtn', 'beautyBtn', 'cpHighBtn', 'cpMediumBtn', 'batchFlexBtn', 'thStore', 'thCategory', 'thFreebie', 'thMember', 'thWindow', 'thValue', 'thDistance'];
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (!el) return;
+    el.textContent = t(id);
+  });
+}
 function updateAllButtonCount() {
   const allBtn = document.getElementById('allBtn');
-  if (allBtn) allBtn.textContent = `All (${data.length})`;
+  if (allBtn) allBtn.textContent = `${t('all')} (${data.length})`;
 }
 function resetActiveFilter() {
   document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
@@ -103,22 +189,22 @@ function initRegions() {
   const select = document.getElementById('regionSelect');
   const keys = Object.keys(regionData);
   if (!keys.length || !select) return;
-  select.innerHTML = keys.map(k => `<option value="${k}">${regionLabels[k] || k}</option>`).join('');
+  select.innerHTML = keys.map(k => `<option value="${k}">${regionLabel(k)}</option>`).join('');
   if (!regionData[currentRegion]) currentRegion = keys[0];
   select.value = currentRegion;
   data = regionData[currentRegion] || [];
 }
 function catLabel(c) {
-  return { food:'Food / Fast Food', drink:'Drinks / Coffee', dessert:'Dessert / Ice Cream', beauty:'Beauty / Retail' }[c] || c;
+  return { food:t('cat_food'), drink:t('cat_drink'), dessert:t('cat_dessert'), beauty:t('cat_beauty') }[c] || c;
 }
 function cpLabel(cp) {
-  return { [CP_HIGH]:'High', [CP_MEDIUM]:'Medium', [CP_LOW]:'Low' }[cp] || cp;
+  return { [CP_HIGH]:t('cpHigh'), [CP_MEDIUM]:t('cpMedium'), [CP_LOW]:t('cpLow') }[cp] || cp;
 }
 function cpClass(cp) {
   return { [CP_HIGH]:'high', [CP_MEDIUM]:'medium', [CP_LOW]:'low' }[cp] || 'medium';
 }
 function distLabel(dist) {
-  return { [DIST_NEAR]:'Near', [DIST_MEDIUM]:'Medium', [DIST_FAR]:'Far' }[dist] || dist;
+  return { [DIST_NEAR]:t('distNear'), [DIST_MEDIUM]:t('distMedium'), [DIST_FAR]:t('distFar') }[dist] || dist;
 }
 function distClass(dist) {
   return { [DIST_NEAR]:'near', [DIST_MEDIUM]:'medium', [DIST_FAR]:'far' }[dist] || 'medium';
@@ -140,7 +226,7 @@ function render() {
     return (distRank[b.dist] || 0) - (distRank[a.dist] || 0);
   });
   const tbody = document.getElementById('tbody');
-  if (!rows.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--color-text-tertiary)">No matching entries found.</td></tr>'; return; }
+  if (!rows.length) { tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--color-text-tertiary)">${t('noResults')}</td></tr>`; return; }
   tbody.innerHTML = rows.map(d => {
     return `<tr class="${d.u ? 'updated-row' : ''}">
       <td>
@@ -156,6 +242,8 @@ function render() {
     </tr>`;
   }).join('');
 }
+currentLocale = detectLocale();
+applyI18nText();
 initRegions();
 updateAllButtonCount();
 render();
