@@ -209,6 +209,45 @@ function distLabel(dist) {
 function distClass(dist) {
   return { [DIST_NEAR]:'near', [DIST_MEDIUM]:'medium', [DIST_FAR]:'far' }[dist] || 'medium';
 }
+const CONTENT_REPLACEMENTS_EN = [
+  ['需要', 'Required'],
+  ['不需要', 'Not required'],
+  ['生日當天', 'Birthday day'],
+  ['生日月份', 'Birthday month'],
+  ['免費', 'Free'],
+  ['任意尺寸', 'Any size'],
+  ['任意', 'Any'],
+  ['當天', 'same day'],
+  ['有效', 'valid'],
+  ['天內', 'days'],
+  ['前一天', 'day before'],
+  ['後一天', 'day after'],
+  ['共', 'total'],
+  ['加入', 'join'],
+  ['帳號', 'account'],
+  ['消費', 'purchase'],
+  ['不含', 'excluding'],
+  ['實體店', 'in-store'],
+  ['線上', 'online'],
+  ['門市', 'store location'],
+  ['約', 'about '],
+  ['英里', 'miles'],
+  ['需', 'must'],
+  ['才能', 'to'],
+  ['領取', 'redeem'],
+  ['條件', 'conditions'],
+  ['最寬鬆', 'most flexible'],
+  ['以官方通知為準', 'subject to official notice']
+];
+function localizeContentText(text) {
+  if (typeof text !== 'string') return text;
+  if (currentLocale !== 'en') return text;
+  let output = text;
+  CONTENT_REPLACEMENTS_EN.forEach(([from, to]) => {
+    output = output.split(from).join(to);
+  });
+  return output;
+}
 function render() {
   const cpRank = { [CP_HIGH]: 3, [CP_MEDIUM]: 2, [CP_LOW]: 1 };
   const distRank = { [DIST_NEAR]: 3, [DIST_MEDIUM]: 2, [DIST_FAR]: 1 };
@@ -230,13 +269,13 @@ function render() {
   tbody.innerHTML = rows.map(d => {
     return `<tr class="${d.u ? 'updated-row' : ''}">
       <td>
-        <div class="store-name">${d.name}</div>
-        <div class="note">${d.note}</div>
+        <div class="store-name">${localizeContentText(d.name)}</div>
+        <div class="note">${localizeContentText(d.note)}</div>
       </td>
       <td><span class="badge cat-${d.cat}">${catLabel(d.cat)}</span></td>
-      <td style="max-width:190px;font-size:12px">${d.item}</td>
-      <td style="font-size:12px">${d.member}</td>
-      <td style="white-space:nowrap;font-size:12px">${d.window}</td>
+      <td style="max-width:190px;font-size:12px">${localizeContentText(d.item)}</td>
+      <td style="font-size:12px">${localizeContentText(d.member)}</td>
+      <td style="white-space:nowrap;font-size:12px">${localizeContentText(d.window)}</td>
       <td><span class="badge cp-${cpClass(d.cp)}">${cpLabel(d.cp)}</span></td>
       <td class="dist-${distClass(d.dist)}">${distLabel(d.dist)}</td>
     </tr>`;
