@@ -20,6 +20,33 @@ Open `index.html` in any browser. Use the filter buttons at the top to sort by c
 
 Currently tracks **~30 brands**, including Starbucks, Sephora, Chipotle, Cheesecake Factory, Dutch Bros, and more.
 
+## Project Structure
+
+```text
+Birthday_Freebies/
+	index.html
+	assets/
+		data/
+			freebies-data.js
+			i18n-data.js
+		scripts/
+			app.js
+	scripts/
+		add_bilingual_fields.js
+	CHANGELOG.md
+	README.md
+```
+
+## Data Maintenance
+
+- Runtime data is loaded from `assets/data/freebies-data.js` and `assets/data/i18n-data.js`.
+- UI logic lives in `assets/scripts/app.js`.
+- To regenerate bilingual fields for freebie entries, run:
+
+```bash
+node scripts/add_bilingual_fields.js
+```
+
 ## Notes on Batch Filters
 
 The filter buttons `4/1`, `4/2`, and `有空再去` (Visit when free) are **hardcoded pickup batches set by the author** for personal planning purposes — they reflect which stores the author planned to visit on specific dates. These labels are not part of the core data model and are **not intended to be permanent**. A future version will remove hardcoded batches and replace them with a user-defined tagging system, allowing anyone to create and assign custom labels to fit their own schedule.

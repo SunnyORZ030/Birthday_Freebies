@@ -1,7 +1,7 @@
 const fs = require('fs');
 const vm = require('vm');
 
-const filePath = 'freebies-data.js';
+const filePath = 'assets/data/freebies-data.js';
 const src = fs.readFileSync(filePath, 'utf8');
 const sandbox = { window: {} };
 vm.createContext(sandbox);
