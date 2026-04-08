@@ -1,20 +1,45 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Basic page metadata -->
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Birthday Freebies Tracker</title>
+
+  <!-- SEO -->
+  <meta name="description" content="Track birthday freebies and rewards in the Bay Area near SJSU, with filters for category, value, and redemption window.">
+  <meta name="theme-color" content="#FAEEDA">
+
+  <!-- Open Graph (social sharing) -->
+  <meta property="og:title" content="Birthday Freebies Tracker">
+  <meta property="og:description" content="Track birthday freebies and rewards in the Bay Area near SJSU, with filters for category, value, and redemption window.">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' rx='56' fill='%23FAEEDA'/%3E%3Ccircle cx='180' cy='180' r='86' fill='%23FCEBEB'/%3E%3Ccircle cx='1020' cy='160' r='104' fill='%23E6F1FB'/%3E%3Ccircle cx='980' cy='500' r='124' fill='%23E1F5EE'/%3E%3Ctext x='90' y='300' font-family='Arial,Helvetica,sans-serif' font-size='64' font-weight='700' fill='%23202020'%3EBirthday Freebies%3C/text%3E%3Ctext x='90' y='384' font-family='Arial,Helvetica,sans-serif' font-size='30' fill='%23505050'%3ETrack birthday rewards near SJSU%3C/text%3E%3C/svg%3E">
+  <meta property="og:image:alt" content="Birthday Freebies Tracker preview image">
+
+  <!-- Twitter/X sharing -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Birthday Freebies Tracker">
+  <meta name="twitter:description" content="Track birthday freebies and rewards in the Bay Area near SJSU, with filters for category, value, and redemption window.">
+  <meta name="twitter:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' rx='56' fill='%23FAEEDA'/%3E%3Ccircle cx='180' cy='180' r='86' fill='%23FCEBEB'/%3E%3Ccircle cx='1020' cy='160' r='104' fill='%23E6F1FB'/%3E%3Ccircle cx='980' cy='500' r='124' fill='%23E1F5EE'/%3E%3Ctext x='90' y='300' font-family='Arial,Helvetica,sans-serif' font-size='64' font-weight='700' fill='%23202020'%3EBirthday Freebies%3C/text%3E%3Ctext x='90' y='384' font-family='Arial,Helvetica,sans-serif' font-size='30' fill='%23505050'%3ETrack birthday rewards near SJSU%3C/text%3E%3C/svg%3E">
+
+  <!-- Favicon -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23FAEEDA'/%3E%3Cpath d='M18 25c0-7 6-12 14-12s14 5 14 12c0 6-4 10-10 12v3h4v4H24v-4h4v-3c-6-2-10-6-10-12zm10 0c0 3 2 5 4 6 2-1 4-3 4-6 0-3-2-5-4-5s-4 2-4 5z' fill='%23202020'/%3E%3C/svg%3E">
   <style>
+    /* Global reset and box model normalization. */
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
+    /* Outer content wrapper. */
     .wrap {
       padding: 1rem 0;
     }
 
+    /* Filter controls layout. */
     .filters {
       display: flex;
       gap: 8px;
@@ -22,6 +47,7 @@
       margin-bottom: 1rem;
     }
 
+    /* Region dropdown styling. */
     .region-select {
       padding: 5px 10px;
       border-radius: 8px;
@@ -31,6 +57,7 @@
       font-size: 13px;
     }
 
+    /* Shared style for all filter buttons. */
     .filter-btn {
       padding: 5px 12px;
       border-radius: 20px;
@@ -42,6 +69,7 @@
       transition: all 0.15s;
     }
 
+    /* Active filter button state. */
     .filter-btn.active {
       background: var(--color-background-info);
       color: var(--color-text-info);
@@ -49,10 +77,12 @@
       font-weight: 500;
     }
 
+    /* Hover feedback for inactive filters. */
     .filter-btn:hover {
       background: var(--color-background-secondary);
     }
 
+    /* Optional legend row for status dots (currently unused in markup). */
     .legend {
       display: flex;
       gap: 12px;
@@ -61,6 +91,7 @@
       align-items: center;
     }
 
+    /* Individual legend item label/value pair. */
     .legend-item {
       display: flex;
       align-items: center;
@@ -69,6 +100,7 @@
       color: var(--color-text-secondary);
     }
 
+    /* Colored circular marker used in legends. */
     .dot {
       width: 8px;
       height: 8px;
@@ -76,12 +108,14 @@
       display: inline-block;
     }
 
+    /* Main data table layout. */
     table {
       width: 100%;
       border-collapse: collapse;
       font-size: 13px;
     }
 
+    /* Table header cells. */
     th {
       text-align: left;
       padding: 8px 10px;
@@ -94,6 +128,7 @@
       white-space: nowrap;
     }
 
+    /* Table body cells. */
     td {
       padding: 9px 10px;
       border-bottom: 0.5px solid var(--color-border-tertiary);
@@ -101,18 +136,22 @@
       color: var(--color-text-primary);
     }
 
+    /* Remove separator under the last row. */
     tr:last-child td {
       border-bottom: none;
     }
 
+    /* Row hover highlight. */
     tr:hover td {
       background: var(--color-background-secondary);
     }
 
+    /* Highlight rows marked as recently updated. */
     tr.updated-row td {
       background: #FAEEDA22;
     }
 
+    /* Shared badge/chip style. */
     .badge {
       display: inline-block;
       padding: 2px 8px;
@@ -122,6 +161,7 @@
       white-space: nowrap;
     }
 
+    /* Value tier color coding. */
     .cp-high {
       background: #EAF3DE;
       color: #27500A;
@@ -137,6 +177,7 @@
       color: #791F1F;
     }
 
+    /* Distance text emphasis. */
     .dist-near {
       color: #1D9E75;
       font-weight: 500;
@@ -147,6 +188,7 @@
       font-weight: 500;
     }
 
+    /* Category badge color coding. */
     .cat-food {
       background: #FBEAF0;
       color: #72243E;
@@ -167,6 +209,7 @@
       color: #085041;
     }
 
+    /* Store name style inside the first column. */
     .store-name {
       font-weight: 500;
       display: flex;
@@ -174,6 +217,7 @@
       gap: 5px;
     }
 
+    /* Secondary note text under store name. */
     .note {
       font-size: 11px;
       color: var(--color-text-tertiary);
@@ -182,7 +226,9 @@
   </style>
 </head>
 <body>
+  <!-- Main app container. -->
   <div class="wrap">
+    <!-- Interactive filters for region, category, value, and planning batch. -->
     <div class="filters">
       <select id="regionSelect" class="region-select" onchange="changeRegion(this.value)"></select>
       <button id="allBtn" class="filter-btn active" onclick="filter('all',this)">All</button>
@@ -197,118 +243,69 @@
       <button id="batchFlexBtn" class="filter-btn" onclick="filter('batch-flex',this)">Flexible</button>
     </div>
 
+    <!-- Responsive table wrapper for narrow screens. -->
     <div style="overflow-x:auto;">
       <table>
+        <!-- Column headers are localized in JavaScript. -->
         <thead>
           <tr>
             <th id="thStore">Store</th><th id="thCategory">Category</th><th id="thFreebie">Freebie</th><th id="thMember">Membership Required?</th><th id="thWindow">Redemption Window</th><th id="thValue">Value</th><th id="thDistance">Distance to SJSU</th>
           </tr>
         </thead>
+        <!-- Data rows are injected by render(). -->
         <tbody id="tbody"></tbody>
       </table>
     </div>
   </div>
 
+  <!-- Static data source for all freebies entries. -->
   <script src="freebies-data.js" charset="UTF-8"></script>
+  <!-- Localization and display metadata. -->
+  <script src="i18n-data.js" charset="UTF-8"></script>
   <script>
+    // Use region-based data when available, otherwise fall back to legacy single-region data.
     const regionData = window.BIRTHDAY_FREEBIES_DATA_BY_REGION || { bay_area: window.BIRTHDAY_FREEBIES_DATA || [] };
 
-    const REGION_LABELS = {
-      bay_area: {
-        en: 'Bay Area (SJSU)',
-        zh: '\u7063\u5340 (SJSU)'
-      }
-    };
+    // Load localization dictionaries and value constants from external metadata.
+    const meta = window.BIRTHDAY_FREEBIES_META || {};
+    const REGION_LABELS = meta.REGION_LABELS || { bay_area: { en: 'Bay Area (SJSU)', zh: '\u7063\u5340 (SJSU)' } };
+    const I18N = meta.I18N || { en: { pageTitle: 'Birthday Freebies Tracker', all: 'All' }, zh: { pageTitle: '\u751F\u65E5\u512A\u60E0\u8FFD\u8E64\u8868', all: '\u5168\u90E8' } };
+    const VALUE_CONSTANTS = meta.CONSTANTS || {};
+    const CONTENT_REPLACEMENTS_EN = meta.CONTENT_REPLACEMENTS_EN || [];
 
-    const I18N = {
-      en: {
-        pageTitle: 'Birthday Freebies Tracker',
-        all: 'All',
-        foodBtn: 'Food / Fast Food',
-        drinkBtn: 'Drinks / Coffee',
-        dessertBtn: 'Dessert / Ice Cream',
-        beautyBtn: 'Beauty / Retail',
-        cpHighBtn: 'High Value',
-        cpMediumBtn: 'Medium Value',
-        batchFlexBtn: 'Flexible',
-        thStore: 'Store',
-        thCategory: 'Category',
-        thFreebie: 'Freebie',
-        thMember: 'Membership Required?',
-        thWindow: 'Redemption Window',
-        thValue: 'Value',
-        thDistance: 'Distance to SJSU',
-        noResults: 'No matching entries found.',
-        cat_food: 'Food / Fast Food',
-        cat_drink: 'Drinks / Coffee',
-        cat_dessert: 'Dessert / Ice Cream',
-        cat_beauty: 'Beauty / Retail',
-        cpHigh: 'High',
-        cpMedium: 'Medium',
-        cpLow: 'Low',
-        distNear: 'Near',
-        distMedium: 'Medium',
-        distFar: 'Far'
-      },
-      zh: {
-        pageTitle: '\u751F\u65E5\u512A\u60E0\u8FFD\u8E64\u8868',
-        all: '\u5168\u90E8',
-        foodBtn: '\u9910\u5EF3/\u901F\u98DF',
-        drinkBtn: '\u98F2\u6599/\u5496\u5561',
-        dessertBtn: '\u751C\u9EDE/\u51B0\u54C1',
-        beautyBtn: '\u7F8E\u599D/\u96F6\u552E',
-        cpHighBtn: '\u9AD8 CP \u503C',
-        cpMediumBtn: '\u4E2D CP \u503C',
-        batchFlexBtn: '\u6709\u7A7A\u518D\u53BB',
-        thStore: '\u5E97\u540D',
-        thCategory: '\u985E\u5225',
-        thFreebie: '\u8D08\u9001\u7269\u54C1',
-        thMember: '\u9700\u6703\u54E1\uFF1F',
-        thWindow: '\u9818\u53D6\u671F\u9650',
-        thValue: 'CP\u503C',
-        thDistance: '\u8DDD SJSU',
-        noResults: '\u6C92\u6709\u7B26\u5408\u689D\u4EF6\u7684\u9805\u76EE',
-        cat_food: '\u9910\u5EF3/\u901F\u98DF',
-        cat_drink: '\u98F2\u6599/\u5496\u5561',
-        cat_dessert: '\u751C\u9EDE/\u51B0\u54C1',
-        cat_beauty: '\u7F8E\u599D/\u96F6\u552E',
-        cpHigh: '\u9AD8',
-        cpMedium: '\u4E2D',
-        cpLow: '\u4F4E',
-        distNear: '\u8FD1',
-        distMedium: '\u4E2D',
-        distFar: '\u9060'
-      }
-    };
-
+    // Runtime state and normalized constants for source values.
     let currentRegion = 'bay_area';
     let data = regionData[currentRegion] || [];
-    const CP_HIGH = '\u9AD8';
-    const CP_MEDIUM = '\u4E2D';
-    const CP_LOW = '\u4F4E';
-    const DIST_NEAR = '\u8FD1';
-    const DIST_MEDIUM = '\u4E2D';
-    const DIST_FAR = '\u9060';
-    const BATCH_FLEX = '\u6709\u7A7A\u518D\u53BB';
+    const CP_HIGH = VALUE_CONSTANTS.CP_HIGH || '\u9AD8';
+    const CP_MEDIUM = VALUE_CONSTANTS.CP_MEDIUM || '\u4E2D';
+    const CP_LOW = VALUE_CONSTANTS.CP_LOW || '\u4F4E';
+    const DIST_NEAR = VALUE_CONSTANTS.DIST_NEAR || '\u8FD1';
+    const DIST_MEDIUM = VALUE_CONSTANTS.DIST_MEDIUM || '\u4E2D';
+    const DIST_FAR = VALUE_CONSTANTS.DIST_FAR || '\u9060';
+    const BATCH_FLEX = VALUE_CONSTANTS.BATCH_FLEX || '\u6709\u7A7A\u518D\u53BB';
     let currentLocale = 'en';
 
     let current = 'all';
 
+    // Detect language from browser preferences.
     function detectLocale() {
       const raw = ((navigator.languages && navigator.languages[0]) || navigator.language || 'en').toLowerCase();
       return raw.startsWith('zh') ? 'zh' : 'en';
     }
 
+    // Translate a UI key using the active locale with English fallback.
     function t(key) {
       return (I18N[currentLocale] && I18N[currentLocale][key]) || I18N.en[key] || key;
     }
 
+    // Resolve a region key into the current locale label.
     function regionLabel(regionKey) {
       const label = REGION_LABELS[regionKey];
       if (!label) return regionKey;
       return label[currentLocale] || label.en || regionKey;
     }
 
+    // Apply translated text to static UI elements.
     function applyI18nText() {
       document.documentElement.lang = currentLocale === 'zh' ? 'zh-Hant' : 'en';
       document.title = t('pageTitle');
@@ -320,17 +317,20 @@
       });
     }
 
+    // Keep the "All" button label in sync with the active region count.
     function updateAllButtonCount() {
       const allBtn = document.getElementById('allBtn');
       if (allBtn) allBtn.textContent = `${t('all')} (${data.length})`;
     }
 
+    // Reset active button styling back to the default "All" state.
     function resetActiveFilter() {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       const allBtn = document.getElementById('allBtn');
       if (allBtn) allBtn.classList.add('active');
     }
 
+    // Handle region dropdown changes and refresh the table.
     function changeRegion(regionKey) {
       currentRegion = regionKey;
       data = regionData[currentRegion] || [];
@@ -340,6 +340,7 @@
       render();
     }
 
+    // Handle filter button clicks and refresh the table.
     function filter(key, btn) {
       document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
@@ -347,6 +348,7 @@
       render();
     }
 
+    // Populate region options from available data keys.
     function initRegions() {
       const select = document.getElementById('regionSelect');
       const keys = Object.keys(regionData);
@@ -357,57 +359,32 @@
       data = regionData[currentRegion] || [];
     }
 
+    // Map internal category code to localized text.
     function catLabel(c) {
       return { food:t('cat_food'), drink:t('cat_drink'), dessert:t('cat_dessert'), beauty:t('cat_beauty') }[c] || c;
     }
 
+    // Map CP value tier to localized text.
     function cpLabel(cp) {
       return { [CP_HIGH]:t('cpHigh'), [CP_MEDIUM]:t('cpMedium'), [CP_LOW]:t('cpLow') }[cp] || cp;
     }
 
+    // Map CP value tier to CSS class suffix.
     function cpClass(cp) {
       return { [CP_HIGH]:'high', [CP_MEDIUM]:'medium', [CP_LOW]:'low' }[cp] || 'medium';
     }
 
+    // Map distance tier to localized text.
     function distLabel(dist) {
       return { [DIST_NEAR]:t('distNear'), [DIST_MEDIUM]:t('distMedium'), [DIST_FAR]:t('distFar') }[dist] || dist;
     }
 
+    // Map distance tier to CSS class suffix.
     function distClass(dist) {
       return { [DIST_NEAR]:'near', [DIST_MEDIUM]:'medium', [DIST_FAR]:'far' }[dist] || 'medium';
     }
 
-    const CONTENT_REPLACEMENTS_EN = [
-      ['需要', 'Required'],
-      ['不需要', 'Not required'],
-      ['生日當天', 'Birthday day'],
-      ['生日月份', 'Birthday month'],
-      ['免費', 'Free'],
-      ['任意尺寸', 'Any size'],
-      ['任意', 'Any'],
-      ['當天', 'same day'],
-      ['有效', 'valid'],
-      ['天內', 'days'],
-      ['前一天', 'day before'],
-      ['後一天', 'day after'],
-      ['共', 'total'],
-      ['加入', 'join'],
-      ['帳號', 'account'],
-      ['消費', 'purchase'],
-      ['不含', 'excluding'],
-      ['實體店', 'in-store'],
-      ['線上', 'online'],
-      ['門市', 'store location'],
-      ['約', 'about '],
-      ['英里', 'miles'],
-      ['需', 'must'],
-      ['才能', 'to'],
-      ['領取', 'redeem'],
-      ['條件', 'conditions'],
-      ['最寬鬆', 'most flexible'],
-      ['以官方通知為準', 'subject to official notice']
-    ];
-
+    // Convert known Chinese phrases to English when explicit English fields are missing.
     function localizeContentText(text) {
       if (typeof text !== 'string') return text;
       if (currentLocale !== 'en') return text;
@@ -418,6 +395,7 @@
       return output;
     }
 
+    // Read locale-specific field when available, then fall back gracefully.
     function getLocalizedField(entry, fieldName) {
       const localeSuffix = currentLocale === 'zh' ? '_zh' : '_en';
       const preferred = entry[fieldName + localeSuffix];
@@ -427,9 +405,13 @@
       return base;
     }
 
+    // Filter, sort, and render all rows for the current UI state.
     function render() {
+      // Prioritize high value and closer distance at the top of the list.
       const cpRank = { [CP_HIGH]: 3, [CP_MEDIUM]: 2, [CP_LOW]: 1 };
       const distRank = { [DIST_NEAR]: 3, [DIST_MEDIUM]: 2, [DIST_FAR]: 1 };
+
+      // Apply the active filter key from the filter buttons.
       const rows = data.filter(d => {
         if (current === 'all') return true;
         if (current === 'cp-high') return d.cp === CP_HIGH;
@@ -445,11 +427,13 @@
       });
 
       const tbody = document.getElementById('tbody');
+      // Render a friendly empty state when no rows match.
       if (!rows.length) {
         tbody.innerHTML = `<tr><td colspan="7" style="text-align:center;padding:2rem;color:var(--color-text-tertiary)">${t('noResults')}</td></tr>`;
         return;
       }
 
+      // Build table rows as HTML for fast UI updates.
       tbody.innerHTML = rows.map(d => {
         return `<tr class="${d.u ? 'updated-row' : ''}">
       <td>
@@ -466,6 +450,7 @@
       }).join('');
     }
 
+    // Initial page bootstrapping sequence.
     currentLocale = detectLocale();
     applyI18nText();
     initRegions();
