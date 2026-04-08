@@ -1,0 +1,196 @@
+/* Global reset and box model normalization. */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Outer content wrapper. */
+.wrap {
+  padding: 1rem 0;
+}
+
+/* Filter controls layout. */
+.filters {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+/* Region dropdown styling. */
+.region-select {
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-size: 13px;
+}
+
+/* Shared style for all filter buttons. */
+.filter-btn {
+  padding: 5px 12px;
+  border-radius: 20px;
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-primary);
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+/* Active filter button state. */
+.filter-btn.active {
+  background: var(--color-background-info);
+  color: var(--color-text-info);
+  border-color: transparent;
+  font-weight: 500;
+}
+
+/* Hover feedback for inactive filters. */
+.filter-btn:hover {
+  background: var(--color-background-secondary);
+}
+
+/* Optional legend row for status dots (currently unused in markup). */
+.legend {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+/* Individual legend item label/value pair. */
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+}
+
+/* Colored circular marker used in legends. */
+.dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Main data table layout. */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+/* Table header cells. */
+th {
+  text-align: left;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-border-tertiary);
+  color: var(--color-text-secondary);
+  font-weight: 500;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+}
+
+/* Table body cells. */
+td {
+  padding: 9px 10px;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  vertical-align: middle;
+  color: var(--color-text-primary);
+}
+
+/* Remove separator under the last row. */
+tr:last-child td {
+  border-bottom: none;
+}
+
+/* Row hover highlight. */
+tr:hover td {
+  background: var(--color-background-secondary);
+}
+
+/* Highlight rows marked as recently updated. */
+tr.updated-row td {
+  background: #FAEEDA22;
+}
+
+/* Shared badge/chip style. */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+/* Value tier color coding. */
+.cp-high {
+  background: #EAF3DE;
+  color: #27500A;
+}
+
+.cp-medium {
+  background: #FAEEDA;
+  color: #633806;
+}
+
+.cp-low {
+  background: #FCEBEB;
+  color: #791F1F;
+}
+
+/* Distance text emphasis. */
+.dist-near {
+  color: #1D9E75;
+  font-weight: 500;
+}
+
+.dist-medium {
+  color: #BA7517;
+  font-weight: 500;
+}
+
+/* Category badge color coding. */
+.cat-food {
+  background: #FBEAF0;
+  color: #72243E;
+}
+
+.cat-drink {
+  background: #E6F1FB;
+  color: #0C447C;
+}
+
+.cat-dessert {
+  background: #EEEDFE;
+  color: #3C3489;
+}
+
+.cat-beauty {
+  background: #E1F5EE;
+  color: #085041;
+}
+
+/* Store name style inside the first column. */
+.store-name {
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* Secondary note text under store name. */
+.note {
+  font-size: 11px;
+  color: var(--color-text-tertiary);
+  margin-top: 2px;
+}

@@ -33,7 +33,10 @@ Refactor metadata structure and improve maintainability
 
 5. Extracted inline JavaScript app logic from [index.html](index.html) to [assets/scripts/app.js](assets/scripts/app.js).
 
+6. Extracted inline CSS from [index.html](index.html) to [assets/styles/main.css](assets/styles/main.css) and switched to external stylesheet loading.
+
 ### Compatibility
 1. Backward-safe fallbacks are retained in [index.html](index.html), so missing metadata keys still degrade gracefully.
 2. No data schema break for existing entries in [assets/data/freebies-data.js](assets/data/freebies-data.js).
 3. Page behavior remains unchanged after moving runtime logic into [assets/scripts/app.js](assets/scripts/app.js).
+4. Visual behavior remains unchanged after moving styles into [assets/styles/main.css](assets/styles/main.css).

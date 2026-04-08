@@ -31,6 +31,8 @@ Birthday_Freebies/
 			i18n-data.js
 		scripts/
 			app.js
+		styles/
+			main.css
 	scripts/
 		add_bilingual_fields.js
 	CHANGELOG.md
@@ -41,6 +43,7 @@ Birthday_Freebies/
 
 - Runtime data is loaded from `assets/data/freebies-data.js` and `assets/data/i18n-data.js`.
 - UI logic lives in `assets/scripts/app.js`.
+- UI styles live in `assets/styles/main.css`.
 - To regenerate bilingual fields for freebie entries, run:
 
 ```bash
