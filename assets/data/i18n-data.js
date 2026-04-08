@@ -1,8 +1,8 @@
 window.BIRTHDAY_FREEBIES_META = {
   REGION_LABELS: {
     bay_area: {
-      en: 'Bay Area (SJSU)',
-      zh: '\u7063\u5340 (SJSU)'
+      en: 'Bay Area',
+      zh: '\u7063\u5340'
     }
   },
 
@@ -14,27 +14,16 @@ window.BIRTHDAY_FREEBIES_META = {
       drinkBtn: 'Drinks / Coffee',
       dessertBtn: 'Dessert / Ice Cream',
       beautyBtn: 'Beauty / Retail',
-      cpHighBtn: 'High Value',
-      cpMediumBtn: 'Medium Value',
-      batchFlexBtn: 'Flexible',
       thStore: 'Store',
       thCategory: 'Category',
       thFreebie: 'Freebie',
       thMember: 'Membership Required?',
       thWindow: 'Redemption Window',
-      thValue: 'Value',
-      thDistance: 'Distance to SJSU',
       noResults: 'No matching entries found.',
       cat_food: 'Food / Fast Food',
       cat_drink: 'Drinks / Coffee',
       cat_dessert: 'Dessert / Ice Cream',
-      cat_beauty: 'Beauty / Retail',
-      cpHigh: 'High',
-      cpMedium: 'Medium',
-      cpLow: 'Low',
-      distNear: 'Near',
-      distMedium: 'Medium',
-      distFar: 'Far'
+      cat_beauty: 'Beauty / Retail'
     },
     zh: {
       pageTitle: '\u751F\u65E5\u512A\u60E0\u8FFD\u8E64\u8868',
@@ -43,39 +32,20 @@ window.BIRTHDAY_FREEBIES_META = {
       drinkBtn: '\u98F2\u6599/\u5496\u5561',
       dessertBtn: '\u751C\u9EDE/\u51B0\u54C1',
       beautyBtn: '\u7F8E\u599D/\u96F6\u552E',
-      cpHighBtn: '\u9AD8 CP \u503C',
-      cpMediumBtn: '\u4E2D CP \u503C',
-      batchFlexBtn: '\u6709\u7A7A\u518D\u53BB',
       thStore: '\u5E97\u540D',
       thCategory: '\u985E\u5225',
       thFreebie: '\u8D08\u9001\u7269\u54C1',
       thMember: '\u9700\u6703\u54E1\uFF1F',
       thWindow: '\u9818\u53D6\u671F\u9650',
-      thValue: 'CP\u503C',
-      thDistance: '\u8DDD SJSU',
       noResults: '\u6C92\u6709\u7B26\u5408\u689D\u4EF6\u7684\u9805\u76EE',
       cat_food: '\u9910\u5EF3/\u901F\u98DF',
       cat_drink: '\u98F2\u6599/\u5496\u5561',
       cat_dessert: '\u751C\u9EDE/\u51B0\u54C1',
-      cat_beauty: '\u7F8E\u599D/\u96F6\u552E',
-      cpHigh: '\u9AD8',
-      cpMedium: '\u4E2D',
-      cpLow: '\u4F4E',
-      distNear: '\u8FD1',
-      distMedium: '\u4E2D',
-      distFar: '\u9060'
+      cat_beauty: '\u7F8E\u599D/\u96F6\u552E'
     }
   },
 
-  CONSTANTS: {
-    CP_HIGH: '\u9AD8',
-    CP_MEDIUM: '\u4E2D',
-    CP_LOW: '\u4F4E',
-    DIST_NEAR: '\u8FD1',
-    DIST_MEDIUM: '\u4E2D',
-    DIST_FAR: '\u9060',
-    BATCH_FLEX: '\u6709\u7A7A\u518D\u53BB'
-  },
+  CONSTANTS: {},
 
   CONTENT_REPLACEMENTS_EN: [
     ['\u9700\u8981', 'Required'],

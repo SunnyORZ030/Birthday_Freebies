@@ -132,33 +132,6 @@ tr.updated-row td {
   white-space: nowrap;
 }
 
-/* Value tier color coding. */
-.cp-high {
-  background: #EAF3DE;
-  color: #27500A;
-}
-
-.cp-medium {
-  background: #FAEEDA;
-  color: #633806;
-}
-
-.cp-low {
-  background: #FCEBEB;
-  color: #791F1F;
-}
-
-/* Distance text emphasis. */
-.dist-near {
-  color: #1D9E75;
-  font-weight: 500;
-}
-
-.dist-medium {
-  color: #BA7517;
-  font-weight: 500;
-}
-
 /* Category badge color coding. */
 .cat-food {
   background: #FBEAF0;

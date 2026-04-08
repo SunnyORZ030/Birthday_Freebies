@@ -52,6 +52,9 @@ function pseudoTranslate(text) {
 for (const regionKey of Object.keys(dataByRegion)) {
   dataByRegion[regionKey] = dataByRegion[regionKey].map((entry) => {
     const next = { ...entry };
+    delete next.cp;
+    delete next.batch;
+    delete next.dist;
     for (const field of ['name', 'item', 'member', 'window', 'note']) {
       if (typeof entry[field] === 'string') {
         next[`${field}_en`] = pseudoTranslate(entry[field]);

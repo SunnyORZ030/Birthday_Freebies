@@ -7,22 +7,22 @@
   <title>Birthday Freebies Tracker</title>
 
   <!-- SEO -->
-  <meta name="description" content="Track birthday freebies and rewards in the Bay Area near SJSU, with filters for category, value, and redemption window.">
+  <meta name="description" content="Track birthday freebies and rewards in the Bay Area, with filters for category and redemption window.">
   <meta name="theme-color" content="#FAEEDA">
 
   <!-- Open Graph (social sharing) -->
   <meta property="og:title" content="Birthday Freebies Tracker">
-  <meta property="og:description" content="Track birthday freebies and rewards in the Bay Area near SJSU, with filters for category, value, and redemption window.">
+  <meta property="og:description" content="Track birthday freebies and rewards in the Bay Area, with filters for category and redemption window.">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="en_US">
-  <meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' rx='56' fill='%23FAEEDA'/%3E%3Ccircle cx='180' cy='180' r='86' fill='%23FCEBEB'/%3E%3Ccircle cx='1020' cy='160' r='104' fill='%23E6F1FB'/%3E%3Ccircle cx='980' cy='500' r='124' fill='%23E1F5EE'/%3E%3Ctext x='90' y='300' font-family='Arial,Helvetica,sans-serif' font-size='64' font-weight='700' fill='%23202020'%3EBirthday Freebies%3C/text%3E%3Ctext x='90' y='384' font-family='Arial,Helvetica,sans-serif' font-size='30' fill='%23505050'%3ETrack birthday rewards near SJSU%3C/text%3E%3C/svg%3E">
+  <meta property="og:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' rx='56' fill='%23FAEEDA'/%3E%3Ccircle cx='180' cy='180' r='86' fill='%23FCEBEB'/%3E%3Ccircle cx='1020' cy='160' r='104' fill='%23E6F1FB'/%3E%3Ccircle cx='980' cy='500' r='124' fill='%23E1F5EE'/%3E%3Ctext x='90' y='300' font-family='Arial,Helvetica,sans-serif' font-size='64' font-weight='700' fill='%23202020'%3EBirthday Freebies%3C/text%3E%3Ctext x='90' y='384' font-family='Arial,Helvetica,sans-serif' font-size='30' fill='%23505050'%3ETrack birthday rewards in Bay Area%3C/text%3E%3C/svg%3E">
   <meta property="og:image:alt" content="Birthday Freebies Tracker preview image">
 
   <!-- Twitter/X sharing -->
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Birthday Freebies Tracker">
-  <meta name="twitter:description" content="Track birthday freebies and rewards in the Bay Area near SJSU, with filters for category, value, and redemption window.">
-  <meta name="twitter:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' rx='56' fill='%23FAEEDA'/%3E%3Ccircle cx='180' cy='180' r='86' fill='%23FCEBEB'/%3E%3Ccircle cx='1020' cy='160' r='104' fill='%23E6F1FB'/%3E%3Ccircle cx='980' cy='500' r='124' fill='%23E1F5EE'/%3E%3Ctext x='90' y='300' font-family='Arial,Helvetica,sans-serif' font-size='64' font-weight='700' fill='%23202020'%3EBirthday Freebies%3C/text%3E%3Ctext x='90' y='384' font-family='Arial,Helvetica,sans-serif' font-size='30' fill='%23505050'%3ETrack birthday rewards near SJSU%3C/text%3E%3C/svg%3E">
+  <meta name="twitter:description" content="Track birthday freebies and rewards in the Bay Area, with filters for category and redemption window.">
+  <meta name="twitter:image" content="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1200' height='630' viewBox='0 0 1200 630'%3E%3Crect width='1200' height='630' rx='56' fill='%23FAEEDA'/%3E%3Ccircle cx='180' cy='180' r='86' fill='%23FCEBEB'/%3E%3Ccircle cx='1020' cy='160' r='104' fill='%23E6F1FB'/%3E%3Ccircle cx='980' cy='500' r='124' fill='%23E1F5EE'/%3E%3Ctext x='90' y='300' font-family='Arial,Helvetica,sans-serif' font-size='64' font-weight='700' fill='%23202020'%3EBirthday Freebies%3C/text%3E%3Ctext x='90' y='384' font-family='Arial,Helvetica,sans-serif' font-size='30' fill='%23505050'%3ETrack birthday rewards in Bay Area%3C/text%3E%3C/svg%3E">
 
   <!-- Favicon -->
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23FAEEDA'/%3E%3Cpath d='M18 25c0-7 6-12 14-12s14 5 14 12c0 6-4 10-10 12v3h4v4H24v-4h4v-3c-6-2-10-6-10-12zm10 0c0 3 2 5 4 6 2-1 4-3 4-6 0-3-2-5-4-5s-4 2-4 5z' fill='%23202020'/%3E%3C/svg%3E">
@@ -32,7 +32,7 @@
 <body>
   <!-- Main app container. -->
   <div class="wrap">
-    <!-- Interactive filters for region, category, value, and planning batch. -->
+    <!-- Interactive filters for region and category. -->
     <div class="filters">
       <select id="regionSelect" class="region-select" onchange="changeRegion(this.value)"></select>
       <button id="allBtn" class="filter-btn active" onclick="filter('all',this)">All</button>
@@ -40,11 +40,6 @@
       <button id="drinkBtn" class="filter-btn" onclick="filter('drink',this)">Drinks / Coffee</button>
       <button id="dessertBtn" class="filter-btn" onclick="filter('dessert',this)">Dessert / Ice Cream</button>
       <button id="beautyBtn" class="filter-btn" onclick="filter('beauty',this)">Beauty / Retail</button>
-      <button id="cpHighBtn" class="filter-btn" onclick="filter('cp-high',this)">High Value</button>
-      <button id="cpMediumBtn" class="filter-btn" onclick="filter('cp-medium',this)">Medium Value</button>
-      <button class="filter-btn" onclick="filter('4/1',this)">4/1</button>
-      <button class="filter-btn" onclick="filter('4/2',this)">4/2</button>
-      <button id="batchFlexBtn" class="filter-btn" onclick="filter('batch-flex',this)">Flexible</button>
     </div>
 
     <!-- Responsive table wrapper for narrow screens. -->
@@ -53,7 +48,7 @@
         <!-- Column headers are localized in JavaScript. -->
         <thead>
           <tr>
-            <th id="thStore">Store</th><th id="thCategory">Category</th><th id="thFreebie">Freebie</th><th id="thMember">Membership Required?</th><th id="thWindow">Redemption Window</th><th id="thValue">Value</th><th id="thDistance">Distance to SJSU</th>
+            <th id="thStore">Store</th><th id="thCategory">Category</th><th id="thFreebie">Freebie</th><th id="thMember">Membership Required?</th><th id="thWindow">Redemption Window</th>
           </tr>
         </thead>
         <!-- Data rows are injected by render(). -->
