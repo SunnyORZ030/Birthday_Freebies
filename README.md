@@ -1,6 +1,6 @@
 # 🎂 Birthday Freebies Tracker
 
-A curated list of birthday freebies from brands in the Bay Area, with a frontend that still reads static data today and a PostgreSQL/Prisma backend foundation ready for the next phase.
+A curated list of birthday freebies from brands in the Bay Area, with an API-backed frontend that falls back to static data when the backend is offline, plus a PostgreSQL/Prisma backend for local development.
 
 ## Columns
 
@@ -15,6 +15,8 @@ A curated list of birthday freebies from brands in the Bay Area, with a frontend
 ## How to Use
 
 Open `index.html` in any browser. Use the filter buttons at the top to sort by category.
+
+When the backend API is running, the page loads data from PostgreSQL first and uses the local JS dataset only as a fallback.
 
 Currently tracks **~30 brands**, including Starbucks, Sephora, Chipotle, Cheesecake Factory, Dutch Bros, and more.
 
@@ -53,7 +55,7 @@ npm run dev
 
 5. Open the frontend.
 
-- Open [index.html](index.html) directly in a browser for the static experience.
+- Open [index.html](index.html) directly in a browser.
 - The frontend will try `http://localhost:3001/api/freebies` first and fall back to the local JS dataset if the API is offline.
 
 6. Optional: inspect the database in Prisma Studio.
@@ -80,9 +82,10 @@ Birthday_Freebies/
 		prisma.config.ts
 		prisma/
 			schema.prisma
+			seed.ts
 			migrations/
 		src/
-			server.js
+			server.ts
 			generated/
 		package.json
 		.env
@@ -97,7 +100,8 @@ Birthday_Freebies/
 
 ## Data Maintenance
 
-- Runtime data is loaded from `assets/data/freebies-data.js` and `assets/data/i18n-data.js`.
+- The static frontend fallback data lives in `assets/data/freebies-data.js` and `assets/data/i18n-data.js`.
+- The backend API reads from PostgreSQL through Prisma and mirrors the same region-based structure.
 - UI logic lives in `assets/scripts/app.js`.
 - UI styles live in `assets/styles/main.css`.
 - To regenerate bilingual fields for freebie entries, run:
@@ -156,6 +160,7 @@ What this does:
 - Re-running `npm run db:seed` is safe; it replaces each region's freebies before reinserting them.
 - If you change the Prisma schema, rerun `npm run prisma:migrate` before seeding.
 - If you change generated Prisma client output, rerun `npm run prisma:generate`.
+- If you add new region data, seed it first so the frontend dropdown can discover it from `/api/regions`.
 
 ## Local PostgreSQL (Docker)
 
