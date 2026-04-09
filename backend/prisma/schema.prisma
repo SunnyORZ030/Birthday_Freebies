@@ -1,0 +1,56 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Regions or market groupings for freebies.
+model Region {
+  id        String      @id @default(uuid())
+  code      String      @unique
+  name      String
+  freebies  Freebie[]
+  createdAt DateTime    @default(now()) @map("created_at")
+  updatedAt DateTime    @updatedAt @map("updated_at")
+
+  @@map("regions")
+}
+
+/// Structural metadata for a freebie entry.
+model Freebie {
+  id            String          @id @default(uuid())
+  regionId      String          @map("region_id")
+  region        Region          @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  category      String          // food, drink, dessert, beauty, etc.
+  isActive      Boolean         @default(true) @map("is_active")
+  sortOrder     Int             @default(0) @map("sort_order")
+  texts         FreebieText[]
+  createdAt     DateTime        @default(now()) @map("created_at")
+  updatedAt     DateTime        @updatedAt @map("updated_at")
+
+  @@map("freebies")
+}
+
+/// Localized text content for a freebie entry.
+model FreebieText {
+  id                String    @id @default(uuid())
+  freebieId         String    @map("freebie_id")
+  freebie           Freebie   @relation(fields: [freebieId], references: [id], onDelete: Cascade)
+  locale            String    // en, zh, etc.
+  name              String
+  item              String
+  member            String
+  redemptionWindow  String    @map("redemption_window")
+  note              String    @default("")
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+
+  @@unique([freebieId, locale])
+  @@map("freebie_texts")
+}

@@ -10,7 +10,7 @@
 
 - Database: PostgreSQL
 - ORM: Prisma
-- Backend: Node.js + Express or Fastify
+- Backend: Node.js (current backend workspace)
 
 ## ERD
 
@@ -96,13 +96,19 @@ Suggested columns:
 - Future filters like region, category, and active state stay easy to query.
 - The schema stays compatible with the current frontend data shape.
 
-## Suggested Constraints
+## Implemented Constraints
 
 - `regions.code` should be unique.
 - `(freebie_id, locale)` should be unique.
-- `category` should be constrained to a known enum or lookup table.
+- `category` is currently stored as a plain string; if we want stricter validation later, we can move it to an enum or lookup table.
 
-## Suggested Indexes
+## Current Indexes
+
+- `regions.code` unique index
+- `freebie_texts(freebie_id, locale)` unique index
+- Foreign keys on `freebies.region_id` and `freebie_texts.freebie_id`
+
+## Possible Future Indexes
 
 - `freebies(region_id)`
 - `freebie_texts(freebie_id)`
@@ -111,8 +117,8 @@ Suggested columns:
 
 ## Possible Next Step
 
-After this design is approved, the next step is to create:
+The schema is already created in `backend/prisma/schema.prisma`. The next step is to:
 
-1. `backend/prisma/schema.prisma`
-2. A one-time import script from `assets/data/freebies-data.js`
-3. API endpoints for listing regions and freebies
+1. Write a one-time import script from `assets/data/freebies-data.js` into the Prisma-backed database.
+2. Add API endpoints for listing regions and freebies.
+3. Decide whether `category` should stay a free-form string or become a stricter enum later.

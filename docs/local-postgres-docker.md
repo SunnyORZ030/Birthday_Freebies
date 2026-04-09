@@ -1,8 +1,10 @@
 # Local PostgreSQL with Docker
 
-## 1. Prepare environment file
+## 1. Prepare environment files
 
-Copy `.env.example` to `.env` and adjust values if needed.
+Copy `.env.example` to `.env` at the repository root if you want to customize the Docker defaults.
+
+If you are using the Prisma backend, make sure `backend/.env` contains the same `DATABASE_URL` value that points at this local PostgreSQL instance.
 
 ## 2. Start database
 
@@ -29,7 +31,16 @@ docker compose down
 docker compose down -v
 ```
 
-## 6. Useful psql connect command
+## 6. Run Prisma against this database
+
+From `backend/`, you can apply or inspect the schema with:
+
+```bash
+npm run prisma:migrate
+npm run prisma:studio
+```
+
+## 7. Useful psql connect command
 
 ```bash
 docker exec -it birthday-freebies-postgres psql -U birthday_user -d birthday_freebies
@@ -39,4 +50,5 @@ docker exec -it birthday-freebies-postgres psql -U birthday_user -d birthday_fre
 
 - Port is mapped to `localhost:5432`.
 - Data is persisted in Docker volume `postgres_data`.
+- If you change the database host, user, or password, update both the root `.env` and `backend/.env` so Docker and Prisma stay in sync.
 - Later migration to AWS RDS only requires changing `DATABASE_URL` and applying migrations.

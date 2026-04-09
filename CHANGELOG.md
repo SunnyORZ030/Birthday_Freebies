@@ -53,9 +53,23 @@ Refactor metadata structure and improve maintainability
 
 9. Hardened environment template values in [.env.example](.env.example) to use safe placeholders instead of directly usable credentials.
 
+10. Initialized Prisma in [backend](backend/) for PostgreSQL-backed development:
+- Installed `prisma` and `@prisma/client` in [backend/package.json](backend/package.json).
+- Ran `npx prisma init --datasource-provider postgresql` to generate [backend/prisma.config.ts](backend/prisma.config.ts), [backend/prisma/schema.prisma](backend/prisma/schema.prisma), and [backend/.env](backend/.env).
+- Pointed Prisma at the local Docker database through [backend/.env](backend/.env) using `DATABASE_URL`.
+- Defined the initial normalized schema for `regions`, `freebies`, and `freebie_texts` in [backend/prisma/schema.prisma](backend/prisma/schema.prisma).
+- Applied the first migration and generated the Prisma client output under [backend/src/generated](backend/src/generated).
+- Removed the temporary Prisma smoke-test script after validation.
+
+11. Updated [README.md](README.md) to reflect the current repository layout and backend workflow:
+- Added the `backend/` Prisma workspace to the project structure.
+- Documented the backend Prisma commands and `DATABASE_URL` usage.
+- Clarified how the Docker PostgreSQL service and backend `.env` work together.
+
 ### Compatibility
 1. Backward-safe fallbacks are retained in [index.html](index.html), so missing metadata keys still degrade gracefully.
 2. No data schema break for existing entries in [assets/data/freebies-data.js](assets/data/freebies-data.js).
 3. Page behavior remains unchanged after moving runtime logic into [assets/scripts/app.js](assets/scripts/app.js).
 4. Visual behavior remains unchanged after moving styles into [assets/styles/main.css](assets/styles/main.css).
 5. Data shape intentionally changed by removing deprecated `batch`, `cp`, and `dist` fields from runtime records.
+6. Backend Prisma setup is now wired to the local PostgreSQL container and has a working initial migration.

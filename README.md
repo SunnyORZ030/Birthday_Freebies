@@ -1,6 +1,6 @@
 # 🎂 Birthday Freebies Tracker
 
-A curated list of birthday freebies from brands in the Bay Area, including redemption requirements and validity windows.
+A curated list of birthday freebies from brands in the Bay Area, with a frontend that still reads static data today and a PostgreSQL/Prisma backend foundation ready for the next phase.
 
 ## Columns
 
@@ -31,8 +31,21 @@ Birthday_Freebies/
 			app.js
 		styles/
 			main.css
+	backend/
+		prisma.config.ts
+		prisma/
+			schema.prisma
+			migrations/
+		src/
+			server.js
+			generated/
+		package.json
+		.env
 	scripts/
 		add_bilingual_fields.js
+	docker-compose.yml
+	.env.example
+	docs/
 	CHANGELOG.md
 	README.md
 ```
@@ -48,9 +61,24 @@ Birthday_Freebies/
 node scripts/add_bilingual_fields.js
 ```
 
+## Backend / Prisma
+
+- The backend workspace lives in `backend/`.
+- Prisma schema and migrations are in `backend/prisma/`.
+- Prisma-generated client code is written to `backend/src/generated/`.
+- The backend reads its connection string from `backend/.env` via `DATABASE_URL`.
+- Useful commands:
+
+```bash
+cd backend
+npm run prisma:generate
+npm run prisma:migrate
+npm run prisma:studio
+```
+
 ## Local PostgreSQL (Docker)
 
-1. Copy env template:
+1. Copy env template for the Docker database if you have not already:
 
 ```bash
 cp .env.example .env
@@ -68,7 +96,9 @@ docker compose up -d
 docker compose ps
 ```
 
-4. Stop service:
+4. If you are working in `backend/`, make sure `DATABASE_URL` in `backend/.env` points at the same local PostgreSQL instance.
+
+5. Stop service:
 
 ```bash
 docker compose down
