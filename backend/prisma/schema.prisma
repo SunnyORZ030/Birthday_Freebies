@@ -6,15 +6,20 @@ generator client {
   output   = "../src/generated"
 }
 
+// PostgreSQL is the local development and import target for this project.
 datasource db {
   provider = "postgresql"
 }
 
-/// Regions or market groupings for freebies.
+/// Top-level market buckets such as Bay Area.
 model Region {
+  // Stable public identifier used by the API and seed script.
   id        String      @id @default(uuid())
+  // Machine-friendly key for lookup and routing.
   code      String      @unique
+  // Human-readable region label shown in the UI.
   name      String
+  // One region can own many freebies.
   freebies  Freebie[]
   createdAt DateTime    @default(now()) @map("created_at")
   updatedAt DateTime    @updatedAt @map("updated_at")
@@ -22,14 +27,21 @@ model Region {
   @@map("regions")
 }
 
-/// Structural metadata for a freebie entry.
+/// Non-localized metadata for a single freebie offer.
 model Freebie {
+  // Stable identifier for the freebie row.
   id            String          @id @default(uuid())
+  // Foreign key back to the owning region.
   regionId      String          @map("region_id")
+  // Relation used by API queries and cascading deletes.
   region        Region          @relation(fields: [regionId], references: [id], onDelete: Cascade)
+  // Category code used for filtering and badges.
   category      String          // food, drink, dessert, beauty, etc.
+  // Soft enable/disable flag for future content moderation.
   isActive      Boolean         @default(true) @map("is_active")
+  // Display order within a region.
   sortOrder     Int             @default(0) @map("sort_order")
+  // Localized text rows for each supported language.
   texts         FreebieText[]
   createdAt     DateTime        @default(now()) @map("created_at")
   updatedAt     DateTime        @updatedAt @map("updated_at")
@@ -37,16 +49,25 @@ model Freebie {
   @@map("freebies")
 }
 
-/// Localized text content for a freebie entry.
+/// Language-specific copy for a freebie offer.
 model FreebieText {
+  // Stable identifier for each localized row.
   id                String    @id @default(uuid())
+  // Foreign key to the parent freebie.
   freebieId         String    @map("freebie_id")
+  // Cascades when the parent freebie is deleted.
   freebie           Freebie   @relation(fields: [freebieId], references: [id], onDelete: Cascade)
+  // Locale code such as en or zh.
   locale            String    // en, zh, etc.
+  // Display name for the offer.
   name              String
+  // Description of the free item or reward.
   item              String
+  // Membership or signup requirement text.
   member            String
+  // Redemption timing or validity window.
   redemptionWindow  String    @map("redemption_window")
+  // Optional note or caveat shown to users.
   note              String    @default("")
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")

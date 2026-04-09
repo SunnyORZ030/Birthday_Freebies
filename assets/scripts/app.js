@@ -1,18 +1,66 @@
-// Use region-based data when available, otherwise fall back to legacy single-region data.
-const regionData = window.BIRTHDAY_FREEBIES_DATA_BY_REGION || { bay_area: window.BIRTHDAY_FREEBIES_DATA || [] };
+// Use region-based static data by default so the page still works without the backend.
+let regionData = window.BIRTHDAY_FREEBIES_DATA_BY_REGION || { bay_area: window.BIRTHDAY_FREEBIES_DATA || [] };
 
 // Load localization dictionaries and value constants from external metadata.
 const meta = window.BIRTHDAY_FREEBIES_META || {};
 const REGION_LABELS = meta.REGION_LABELS || { bay_area: { en: 'Bay Area', zh: '\u7063\u5340' } };
 const I18N = meta.I18N || { en: { pageTitle: 'Birthday Freebies Tracker', all: 'All' }, zh: { pageTitle: '\u751F\u65E5\u512A\u60E0\u8FFD\u8E64\u8868', all: '\u5168\u90E8' } };
 const CONTENT_REPLACEMENTS_EN = meta.CONTENT_REPLACEMENTS_EN || [];
+const API_BASE_URL = (window.BIRTHDAY_FREEBIES_API_BASE_URL || 'http://localhost:3001').replace(/\/$/, '');
 
 // Runtime state and normalized constants for source values.
 let currentRegion = 'bay_area';
 let data = regionData[currentRegion] || [];
 let currentLocale = 'en';
+let dataSource = 'static';
+let apiRegionsByCode = {};
 
 let current = 'all';
+
+// Replace the static dataset with database-backed data when the API is reachable.
+async function hydrateDataFromApi() {
+  try {
+    const [freebiesResponse, regionsResponse] = await Promise.all([
+      fetch(`${API_BASE_URL}/api/freebies`),
+      fetch(`${API_BASE_URL}/api/regions`)
+    ]);
+
+    if (!freebiesResponse.ok) {
+      throw new Error(`API responded with status ${freebiesResponse.status}`);
+    }
+
+    const payload = await freebiesResponse.json();
+    if (!payload || typeof payload !== 'object' || !payload.dataByRegion) {
+      throw new Error('API payload missing dataByRegion');
+    }
+
+    const keys = Object.keys(payload.dataByRegion || {});
+    if (!keys.length) {
+      throw new Error('API returned empty region data');
+    }
+
+    // Keep a separate region-name map so the dropdown can use database metadata too.
+    if (regionsResponse.ok) {
+      const regionPayload = await regionsResponse.json();
+      if (regionPayload && Array.isArray(regionPayload.regions)) {
+        apiRegionsByCode = regionPayload.regions.reduce((acc, region) => {
+          if (region && typeof region.code === 'string' && typeof region.name === 'string') {
+            acc[region.code] = region.name;
+          }
+          return acc;
+        }, {});
+      }
+    }
+
+    regionData = payload.dataByRegion;
+    dataSource = 'api';
+    return true;
+  } catch (error) {
+    console.warn('Using static freebies data because API is unavailable.', error);
+    dataSource = 'static';
+    return false;
+  }
+}
 
 // Detect language from browser preferences.
 function detectLocale() {
@@ -28,11 +76,18 @@ function t(key) {
 // Resolve a region key into the current locale label.
 function regionLabel(regionKey) {
   const label = REGION_LABELS[regionKey];
-  if (!label) return regionKey;
-  return label[currentLocale] || label.en || regionKey;
+  if (label) return label[currentLocale] || label.en || regionKey;
+  return apiRegionsByCode[regionKey] || regionKey;
 }
 
-// Apply translated text to static UI elements.
+function sourceLabel() {
+  if (currentLocale === 'zh') {
+    return dataSource === 'api' ? '資料來源：API（資料庫）' : '資料來源：Static（本地）';
+  }
+  return dataSource === 'api' ? 'Data source: API (database)' : 'Data source: Static (local)';
+}
+
+// Apply translated text and data-source state to the static chrome around the table.
 function applyI18nText() {
   document.documentElement.lang = currentLocale === 'zh' ? 'zh-Hant' : 'en';
   document.title = t('pageTitle');
@@ -42,6 +97,13 @@ function applyI18nText() {
     if (!el) return;
     el.textContent = t(id);
   });
+
+  const badge = document.getElementById('dataSourceBadge');
+  if (badge) {
+    badge.textContent = sourceLabel();
+    badge.classList.toggle('is-api', dataSource === 'api');
+    badge.classList.toggle('is-static', dataSource !== 'api');
+  }
 }
 
 // Keep the "All" button label in sync with the active region count.
@@ -75,7 +137,7 @@ function filter(key, btn) {
   render();
 }
 
-// Populate region options from available data keys.
+// Populate region options from whichever dataset is currently active.
 function initRegions() {
   const select = document.getElementById('regionSelect');
   const keys = Object.keys(regionData);
@@ -112,7 +174,8 @@ function getLocalizedField(entry, fieldName) {
   return base;
 }
 
-// Filter, sort, and render all rows for the current UI state.
+// Render is intentionally pure with respect to view state: it reads the current
+// region, locale, and filter selection, then rebuilds the table HTML.
 function render() {
   // Apply the active filter key from the filter buttons.
   const rows = data.filter(d => {
@@ -143,9 +206,14 @@ function render() {
   }).join('');
 }
 
-// Initial page bootstrapping sequence.
-currentLocale = detectLocale();
-applyI18nText();
-initRegions();
-updateAllButtonCount();
-render();
+// Boot sequence: detect locale, hydrate data, then initialize labels and table.
+async function boot() {
+  currentLocale = detectLocale();
+  await hydrateDataFromApi();
+  applyI18nText();
+  initRegions();
+  updateAllButtonCount();
+  render();
+}
+
+boot();

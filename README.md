@@ -18,6 +18,51 @@ Open `index.html` in any browser. Use the filter buttons at the top to sort by c
 
 Currently tracks **~30 brands**, including Starbucks, Sephora, Chipotle, Cheesecake Factory, Dutch Bros, and more.
 
+## Development Workflow
+
+Use this sequence when you want to work on the app locally from a fresh checkout:
+
+1. Install backend dependencies.
+
+```bash
+cd backend
+npm install
+```
+
+2. Start the local PostgreSQL container from the repository root.
+
+```bash
+cd ..
+docker compose up -d
+```
+
+3. Apply Prisma migrations and seed the database.
+
+```bash
+cd backend
+npm run prisma:migrate
+npm run db:seed
+```
+
+4. Start the backend API server.
+
+```bash
+cd backend
+npm run dev
+```
+
+5. Open the frontend.
+
+- Open [index.html](index.html) directly in a browser for the static experience.
+- The frontend will try `http://localhost:3001/api/freebies` first and fall back to the local JS dataset if the API is offline.
+
+6. Optional: inspect the database in Prisma Studio.
+
+```bash
+cd backend
+npm run prisma:studio
+```
+
 ## Project Structure
 
 ```text
@@ -67,14 +112,50 @@ node scripts/add_bilingual_fields.js
 - Prisma schema and migrations are in `backend/prisma/`.
 - Prisma-generated client code is written to `backend/src/generated/`.
 - The backend reads its connection string from `backend/.env` via `DATABASE_URL`.
+- API endpoint for frontend data: `GET http://localhost:3001/api/freebies`.
+- Regions endpoint: `GET http://localhost:3001/api/regions`.
 - Useful commands:
 
 ```bash
 cd backend
+npm run dev
 npm run prisma:generate
 npm run prisma:migrate
+npm run db:seed
 npm run prisma:studio
 ```
+
+Frontend loading behavior:
+
+- Tries backend API first (`http://localhost:3001/api/freebies`).
+- Falls back to static `assets/data/freebies-data.js` automatically if backend is not running.
+- Shows a data-source badge in the UI so you can see whether data came from API or static source.
+
+## Import Data Into Database
+
+After PostgreSQL is running and your `backend/.env` has the correct `DATABASE_URL`:
+
+```bash
+cd backend
+npm install
+npm run prisma:migrate
+npm run db:seed
+```
+
+What this does:
+
+- Reads source data from `assets/data/freebies-data.js`.
+- Upserts region rows by region code.
+- Replaces existing freebies in each region and re-inserts them in the current sort order.
+- Writes two localized text rows per freebie (`zh` and `en`) into `freebie_texts`.
+
+## Development Notes
+
+- The source of truth for seeded content is `assets/data/freebies-data.js`.
+- The backend API reads from PostgreSQL through Prisma and mirrors the frontend's region-based shape.
+- Re-running `npm run db:seed` is safe; it replaces each region's freebies before reinserting them.
+- If you change the Prisma schema, rerun `npm run prisma:migrate` before seeding.
+- If you change generated Prisma client output, rerun `npm run prisma:generate`.
 
 ## Local PostgreSQL (Docker)
 

@@ -1,4 +1,5 @@
 window.BIRTHDAY_FREEBIES_META = {
+  // Human-readable labels for region codes used by the frontend dropdown.
   REGION_LABELS: {
     bay_area: {
       en: 'Bay Area',
@@ -6,6 +7,7 @@ window.BIRTHDAY_FREEBIES_META = {
     }
   },
 
+  // Localized UI text for buttons, table headers, and empty states.
   I18N: {
     en: {
       pageTitle: 'Birthday Freebies Tracker',
@@ -45,8 +47,11 @@ window.BIRTHDAY_FREEBIES_META = {
     }
   },
 
+  // Reserved for future cross-file constants shared by the runtime scripts.
   CONSTANTS: {},
 
+  // Best-effort English substitutions for legacy Chinese strings that do not
+  // yet have explicit *_en fields in the dataset.
   CONTENT_REPLACEMENTS_EN: [
     ['\u9700\u8981', 'Required'],
     ['\u4E0D\u9700\u8981', 'Not required'],

@@ -18,6 +18,30 @@
   margin-bottom: 1rem;
 }
 
+/* Data source indicator shown above the table. */
+.data-source-badge {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 500;
+  margin-bottom: 10px;
+  border: 1px solid transparent;
+}
+
+.data-source-badge.is-api {
+  background: #E1F5EE;
+  color: #085041;
+  border-color: #A7DAC8;
+}
+
+.data-source-badge.is-static {
+  background: #FBEAF0;
+  color: #72243E;
+  border-color: #F2B9C9;
+}
+
 /* Region dropdown styling. */
 .region-select {
   padding: 5px 10px;
