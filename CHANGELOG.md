@@ -35,8 +35,27 @@ Refactor metadata structure and improve maintainability
 
 6. Extracted inline CSS from [index.html](index.html) to [assets/styles/main.css](assets/styles/main.css) and switched to external stylesheet loading.
 
+7. Removed planning-batch, CP-value, and distance-to-SJSU fields across UI, logic, and dataset:
+- Removed related filter buttons and table columns from [index.html](index.html).
+- Removed related filtering/rendering logic from [assets/scripts/app.js](assets/scripts/app.js).
+- Removed related keys/constants from [assets/data/i18n-data.js](assets/data/i18n-data.js).
+- Removed related style rules from [assets/styles/main.css](assets/styles/main.css).
+- Removed deprecated fields from [assets/data/freebies-data.js](assets/data/freebies-data.js).
+- Updated [scripts/add_bilingual_fields.js](scripts/add_bilingual_fields.js) so regenerated data keeps those fields removed.
+- Updated [README.md](README.md) to match the new simplified data model.
+
+8. Added local Docker PostgreSQL setup for development:
+- Added [docker-compose.yml](docker-compose.yml).
+- Added [docs/local-postgres-docker.md](docs/local-postgres-docker.md).
+- Added [docs/database-design.md](docs/database-design.md).
+- Added [.env.example](.env.example) and updated [README.md](README.md) setup instructions.
+- Updated [.gitignore](.gitignore) to ignore local env files.
+
+9. Hardened environment template values in [.env.example](.env.example) to use safe placeholders instead of directly usable credentials.
+
 ### Compatibility
 1. Backward-safe fallbacks are retained in [index.html](index.html), so missing metadata keys still degrade gracefully.
 2. No data schema break for existing entries in [assets/data/freebies-data.js](assets/data/freebies-data.js).
 3. Page behavior remains unchanged after moving runtime logic into [assets/scripts/app.js](assets/scripts/app.js).
 4. Visual behavior remains unchanged after moving styles into [assets/styles/main.css](assets/styles/main.css).
+5. Data shape intentionally changed by removing deprecated `batch`, `cp`, and `dist` fields from runtime records.
