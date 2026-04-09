@@ -1,1 +1,8 @@
 .DS_Store
+
+# Local environment files
+.env
+.env.local
+
+# Runtime logs
+*.log

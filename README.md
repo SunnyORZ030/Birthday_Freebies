@@ -48,6 +48,34 @@ Birthday_Freebies/
 node scripts/add_bilingual_fields.js
 ```
 
+## Local PostgreSQL (Docker)
+
+1. Copy env template:
+
+```bash
+cp .env.example .env
+```
+
+2. Start PostgreSQL:
+
+```bash
+docker compose up -d
+```
+
+3. Verify service:
+
+```bash
+docker compose ps
+```
+
+4. Stop service:
+
+```bash
+docker compose down
+```
+
+Detailed setup guide: [docs/local-postgres-docker.md](docs/local-postgres-docker.md)
+
 ## Roadmap / Planned Features
 
 - [ ] **Add/edit entries in UI** — Provide a form-based interface to add or edit freebies without modifying source code.
