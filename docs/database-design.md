@@ -11,7 +11,7 @@
 - Database: PostgreSQL
 - ORM: Prisma
 - Backend runtime API: Python (FastAPI + psycopg)
-- Backend tooling: Node.js (Prisma CLI, migrations, and seed script)
+- Backend tooling: Node.js (Prisma CLI, migrations, seed script, and API sync script)
 
 ## ERD
 
@@ -132,4 +132,19 @@ The schema is already created in `backend/prisma/schema.prisma`. The next step i
 
 1. Add explicit query-performance indexes after measuring usage patterns (for example: partial index on `freebies(region_id, sort_order, created_at) WHERE is_active = TRUE`, then `freebies(region_id, is_active)`, then `freebies(category)`).
 2. Decide whether `category` should stay a free-form string or become a stricter enum/lookup table.
-3. Add write-side API capabilities (create/update/deactivate freebies) when admin workflows are defined.
+3. Decide whether the sync script should become a first-class import pipeline for crawler output or remain a thin wrapper around the write API.
+
+## Runtime Data Flow
+
+The current production-style data path is:
+
+1. Source data is prepared in `assets/data/freebies-data.js` or emitted by a future crawler.
+2. `scripts/sync_freebies_api.js` normalizes the source data into the FastAPI write contract.
+3. FastAPI persists regions, freebies, and localized text rows through `POST /api/freebies`, `PUT /api/freebies/{freebie_id}`, and `DELETE /api/freebies/{freebie_id}`.
+4. The frontend reads runtime data back from PostgreSQL through FastAPI endpoints.
+
+## Operational Notes
+
+- `backend/prisma/seed.ts` is still useful for initial database bootstrap or full resets.
+- Day-to-day content maintenance should go through the write API or the sync script, not by editing seeded data manually.
+- `scripts/add_bilingual_fields.js` has been retired and is no longer part of the workflow.

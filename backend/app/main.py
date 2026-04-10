@@ -1,13 +1,29 @@
 from typing import Annotated
 
-from fastapi import FastAPI, Query, Request
+from fastapi import FastAPI, HTTPException, Path, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 
-from app.contracts import ErrorResponse, FreebiesResponse, HealthResponse, RegionsResponse
+from app.contracts import (
+    ErrorResponse,
+    FreebieCreateRequest,
+    FreebieCreatedResponse,
+    FreebieUpdatedResponse,
+    FreebieUpdateRequest,
+    FreebiesResponse,
+    HealthResponse,
+    RegionsResponse,
+)
 from app.db import get_connection_url
-from app.services.freebies_service import get_freebies_by_region_service, get_regions_service
+from app.services.freebies_service import (
+    create_freebie_service,
+    delete_freebie_service,
+    get_freebies_by_region_service,
+    get_regions_service,
+    update_freebie_service,
+    FreebieCreationError,
+)
 
 # Main API app used by uvicorn.
 app = FastAPI(title="Birthday Freebies API")
@@ -44,6 +60,26 @@ async def handle_validation_error(_request: Request, exc: RequestValidationError
             code="invalid_request",
             message="Request validation failed.",
             details=details,
+        ),
+    )
+
+
+@app.exception_handler(FreebieCreationError)
+async def handle_freebie_creation_error(_request: Request, exc: FreebieCreationError) -> JSONResponse:
+    # Determine status code based on error message.
+    error_msg = str(exc)
+    if "not found" in error_msg.lower():
+        status_code = 404
+        code = "not_found"
+    else:
+        status_code = 400
+        code = "business_error"
+    
+    return JSONResponse(
+        status_code=status_code,
+        content=_error_payload(
+            code=code,
+            message=error_msg,
         ),
     )
 
@@ -105,3 +141,117 @@ def get_freebies(
             ]
         )
     return FreebiesResponse(dataByRegion=data_by_region)
+
+
+# Create a new freebie with bilingual texts.
+@app.post(
+    "/api/freebies",
+    response_model=FreebieCreatedResponse,
+    responses={
+        400: {"model": ErrorResponse},
+        422: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+    status_code=201,
+)
+def create_freebie(req: FreebieCreateRequest) -> FreebieCreatedResponse:
+    """
+    Create a new freebie offer with Chinese and English texts.
+    
+    Returns 201 on success with the new freebie ID and created timestamp.
+    Returns 400 if region does not exist.
+    Returns 422 if request validation fails.
+    Returns 500 on unexpected errors.
+    """
+    result = create_freebie_service(
+        get_connection_url(),
+        region_code=req.region_code,
+        category=req.category,
+        sort_order=req.sort_order,
+        zh_text={
+            "name": req.zh.name,
+            "item": req.zh.item,
+            "member": req.zh.member,
+            "redemption_window": req.zh.redemption_window,
+            "note": req.zh.note,
+        },
+        en_text={
+            "name": req.en.name,
+            "item": req.en.item,
+            "member": req.en.member,
+            "redemption_window": req.en.redemption_window,
+            "note": req.en.note,
+        },
+    )
+    return FreebieCreatedResponse(**result)
+
+
+# Update an existing freebie.
+@app.put(
+    "/api/freebies/{freebie_id}",
+    response_model=FreebieUpdatedResponse,
+    responses={
+        400: {"model": ErrorResponse},
+        404: {"model": ErrorResponse},
+        422: {"model": ErrorResponse},
+        500: {"model": ErrorResponse},
+    },
+)
+def update_freebie(
+    freebie_id: Annotated[str, Path(description="Unique freebie identifier (UUID)")],
+    req: FreebieUpdateRequest,
+) -> FreebieUpdatedResponse:
+    """
+    Update an existing freebie's metadata and/or texts.
+    Only provided fields are updated; omitted fields are left unchanged.
+    
+    Returns 200 on success.
+    Returns 404 if freebie does not exist.
+    Returns 400 if no updateable fields are provided.
+    Returns 422 if request validation fails.
+    Returns 500 on unexpected errors.
+    """
+    result = update_freebie_service(
+        get_connection_url(),
+        freebie_id=freebie_id,
+        category=req.category,
+        sort_order=req.sort_order,
+        is_active=req.is_active,
+        zh_text={
+            "name": req.zh.name,
+            "item": req.zh.item,
+            "member": req.zh.member,
+            "redemption_window": req.zh.redemption_window,
+            "note": req.zh.note,
+        } if req.zh else None,
+        en_text={
+            "name": req.en.name,
+            "item": req.en.item,
+            "member": req.en.member,
+            "redemption_window": req.en.redemption_window,
+            "note": req.en.note,
+        } if req.en else None,
+    )
+    return FreebieUpdatedResponse(**result)
+
+
+# Delete a freebie.
+@app.delete(
+    "/api/freebies/{freebie_id}",
+    responses={
+        204: {},
+        500: {"model": ErrorResponse},
+    },
+    status_code=204,
+)
+def delete_freebie(
+    freebie_id: Annotated[str, Path(description="Unique freebie identifier (UUID)")],
+) -> None:
+    """
+    Delete a freebie and its associated texts.
+    
+    Returns 204 (No Content) on success, whether or not the freebie existed.
+    Returns 500 on unexpected errors.
+    """
+    delete_freebie_service(get_connection_url(), freebie_id)
+    # Delete is idempotent; always return 204.

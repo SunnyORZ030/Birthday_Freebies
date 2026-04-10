@@ -9,7 +9,7 @@ Refactor metadata structure, add database-backed workflow, and improve maintaina
 1. Extracted localization and display metadata from HTML into a separate file for cleaner structure.
 2. Updated script loading flow to include metadata file before app logic.
 3. Added a Prisma-backed database workflow with seed/import support and a local API server.
-4. Updated the frontend to hydrate from the API first, with static fallback when the backend is offline.
+4. Updated the frontend to hydrate from the API first and surface an error state when the backend is offline.
 5. Kept runtime behavior compatible while improving readability and maintainability.
 6. Added and refined inline comments across the main data, UI, and schema files.
 
@@ -26,12 +26,12 @@ Refactor metadata structure, add database-backed workflow, and improve maintaina
 - Preserve existing filtering, sorting, and rendering behavior
 - Improve section comments for readability
 
-3. Updated [scripts/add_bilingual_fields.js](scripts/add_bilingual_fields.js) and [README.md](README.md) as part of this version.
+3. Updated the bilingual field generation script and [README.md](README.md) as part of this version.
 
 4. Reorganized runtime files into an `assets` structure:
 - Moved [assets/data/freebies-data.js](assets/data/freebies-data.js) and [assets/data/i18n-data.js](assets/data/i18n-data.js) into `assets/data`.
 - Updated [index.html](index.html) script paths to load data from the new location.
-- Updated [scripts/add_bilingual_fields.js](scripts/add_bilingual_fields.js) to write to the new data path.
+- Updated the bilingual field generation script to write to the new data path.
 
 5. Extracted inline JavaScript app logic from [index.html](index.html) to [assets/scripts/app.js](assets/scripts/app.js).
 
@@ -43,7 +43,7 @@ Refactor metadata structure, add database-backed workflow, and improve maintaina
 - Removed related keys/constants from [assets/data/i18n-data.js](assets/data/i18n-data.js).
 - Removed related style rules from [assets/styles/main.css](assets/styles/main.css).
 - Removed deprecated fields from [assets/data/freebies-data.js](assets/data/freebies-data.js).
-- Updated [scripts/add_bilingual_fields.js](scripts/add_bilingual_fields.js) so regenerated data keeps those fields removed.
+- Updated the bilingual field generation script so regenerated data keeps those fields removed.
 - Updated [README.md](README.md) to match the new simplified data model.
 
 8. Added local Docker PostgreSQL setup for development:
@@ -68,7 +68,7 @@ Refactor metadata structure, add database-backed workflow, and improve maintaina
 - Documented the backend Prisma commands and `DATABASE_URL` usage.
 - Clarified how the Docker PostgreSQL service and backend `.env` work together.
 
-12. Added a lightweight database-backed API in [backend/src/server.ts](backend/src/server.ts):
+12. Added a lightweight database-backed API in the original Node server implementation:
 - Exposed `GET /health` for local verification.
 - Exposed `GET /api/freebies` to return region-grouped freebies from PostgreSQL.
 - Exposed `GET /api/regions` to populate the frontend region dropdown from the database.
@@ -94,7 +94,7 @@ Refactor metadata structure, add database-backed workflow, and improve maintaina
 - Open the frontend and use Prisma Studio when needed.
 
 16. Added explanatory comments to the main runtime and schema files for easier maintenance:
-- [backend/src/server.ts](backend/src/server.ts)
+- the original Node server implementation
 - [assets/scripts/app.js](assets/scripts/app.js)
 - [assets/data/i18n-data.js](assets/data/i18n-data.js)
 - [backend/prisma/seed.ts](backend/prisma/seed.ts)
@@ -104,7 +104,7 @@ Refactor metadata structure, add database-backed workflow, and improve maintaina
 - Added FastAPI server entry at [backend/app/main.py](backend/app/main.py).
 - Added Python dependencies in [backend/requirements.txt](backend/requirements.txt).
 - Updated `npm run dev` to launch uvicorn through the project virtual environment.
-- Removed old Node API entry files [backend/src/server.ts](backend/src/server.ts) and [backend/src/server.js](backend/src/server.js) after validating parity for `/health`, `/api/freebies`, and `/api/regions`.
+- Removed the old Node API entry files after validating parity for `/health`, `/api/freebies`, and `/api/regions`.
 
 18. Updated [backend/.gitignore](backend/.gitignore) for Python runtime artifacts:
 - Ignored `__pycache__/` directories.
@@ -150,4 +150,4 @@ Refactor metadata structure, add database-backed workflow, and improve maintaina
 4. Visual behavior remains unchanged after moving styles into [assets/styles/main.css](assets/styles/main.css).
 5. Data shape intentionally changed by removing deprecated `batch`, `cp`, and `dist` fields from runtime records.
 6. Backend Prisma setup is now wired to the local PostgreSQL container and has a working initial migration.
-7. Seed/import flow remains compatible with [assets/data/freebies-data.js](assets/data/freebies-data.js), but frontend runtime now requires the FastAPI API to be available.
+7. Seed/import flow remains compatible with [assets/data/freebies-data.js](assets/data/freebies-data.js), and frontend runtime now requires the FastAPI API to be available.

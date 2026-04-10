@@ -40,7 +40,7 @@ cd ..
 docker compose up -d
 ```
 
-3. Apply Prisma migrations and seed the database.
+3. Apply Prisma migrations and seed the database for initial bootstrap.
 
 ```bash
 cd backend
@@ -100,11 +100,12 @@ Birthday_Freebies/
 			generated/
 		tests/
 			test_api_smoke.py
+			test_api_write.py
 		requirements.txt
 		package.json
 		.env
 	scripts/
-		add_bilingual_fields.js
+		sync_freebies_api.js
 	docker-compose.yml
 	.env.example
 	docs/
@@ -116,13 +117,9 @@ Birthday_Freebies/
 
 - The frontend runtime data source is FastAPI; the static data files under `assets/data/` are now legacy content sources, not page runtime inputs.
 - The backend API (FastAPI + psycopg) reads directly from PostgreSQL.
+- Day-to-day content changes should go through the FastAPI write endpoints or `npm run sync:freebies`.
 - UI logic lives in `assets/scripts/app.js`.
 - UI styles live in `assets/styles/main.css`.
-- To regenerate bilingual fields for freebie entries, run:
-
-```bash
-node scripts/add_bilingual_fields.js
-```
 
 ## Backend / Prisma
 
@@ -136,6 +133,7 @@ node scripts/add_bilingual_fields.js
 - The backend reads its connection string from `backend/.env` via `DATABASE_URL`.
 - API endpoint for frontend data: `GET http://localhost:3001/api/freebies`.
 - Regions endpoint: `GET http://localhost:3001/api/regions`.
+- Write endpoints: `POST /api/freebies`, `PUT /api/freebies/{freebie_id}`, `DELETE /api/freebies/{freebie_id}`.
 - Stable API contract document: `docs/api-contract.md`.
 - Useful commands:
 
@@ -150,6 +148,8 @@ npm run db:seed
 npm run prisma:studio
 # API smoke tests
 python -m pytest -q
+# Sync source data through the write API
+npm run sync:freebies -- --dry-run
 ```
 
 Frontend loading behavior:
@@ -157,9 +157,10 @@ Frontend loading behavior:
 - Uses backend API (`http://localhost:3001/api/freebies`) as the runtime data source.
 - Shows a data-source badge in the UI so you can see whether data came from API or whether the API is unavailable.
 
-Backend test skeleton:
+Backend tests:
 
-- Smoke tests for API route shape live in `backend/tests/test_api_smoke.py`.
+- Read-contract smoke tests live in `backend/tests/test_api_smoke.py`.
+- Write-flow tests live in `backend/tests/test_api_write.py`.
 
 ## Import Data Into Database
 
@@ -172,21 +173,39 @@ npm run prisma:migrate
 npm run db:seed
 ```
 
+Use `db:seed` for initial database bootstrap or a full reset.
+
+To sync the current source data through the FastAPI write endpoint, run:
+
+```bash
+cd backend
+npm run sync:freebies
+```
+
+Useful variants:
+
+```bash
+cd backend
+npm run sync:freebies -- --dry-run
+npm run sync:freebies -- --region bay_area --limit 1
+```
+
 What this does:
 
 - Reads source data from `assets/data/freebies-data.js`.
-- Upserts region rows by region code.
-- Replaces existing freebies in each region and re-inserts them in the current sort order.
-- Writes two localized text rows per freebie (`zh` and `en`) into `freebie_texts`.
+- Normalizes source entries into the FastAPI write contract.
+- Posts each freebie to `POST /api/freebies`.
+- Lets you dry-run or filter to one region while keeping the same payload shape a future crawler can use.
 
 ## Development Notes
 
-- The source of truth for seeded content is `assets/data/freebies-data.js`.
-- The backend API is FastAPI-based and reads directly from PostgreSQL, while Prisma is used for schema, migrations, and seed tooling.
-- Re-running `npm run db:seed` is safe; it replaces each region's freebies before reinserting them.
+- The source of truth for active runtime data is PostgreSQL behind FastAPI.
+- `assets/data/freebies-data.js` is the current import source for seed and sync workflows, not the runtime frontend source.
+- The backend API is FastAPI-based and reads directly from PostgreSQL, while Prisma is used for schema, migrations, and bootstrap tooling.
+- Re-running `npm run db:seed` is safe for resets, but normal content maintenance should use the write API or `npm run sync:freebies`.
 - If you change the Prisma schema, rerun `npm run prisma:migrate` before seeding.
 - If you change generated Prisma client output, rerun `npm run prisma:generate`.
-- If you add new region data, seed it first so the frontend dropdown can discover it from `/api/regions`.
+- If you add new region data, seed it first for bootstrap or sync it through the write API so the frontend dropdown can discover it from `/api/regions`.
 
 ## Local PostgreSQL (Docker)
 
