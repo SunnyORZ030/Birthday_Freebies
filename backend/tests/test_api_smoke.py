@@ -15,7 +15,7 @@ def test_health_ok() -> None:
 def test_regions_shape(monkeypatch) -> None:
     monkeypatch.setattr("app.main.get_connection_url", lambda: "postgresql://placeholder")
     monkeypatch.setattr(
-        "app.main.fetch_regions",
+        "app.main.get_regions_service",
         lambda _connection_url: [{"code": "bay_area", "name": "Bay Area"}],
     )
 
@@ -29,7 +29,7 @@ def test_regions_shape(monkeypatch) -> None:
 def test_freebies_shape(monkeypatch) -> None:
     monkeypatch.setattr("app.main.get_connection_url", lambda: "postgresql://placeholder")
     monkeypatch.setattr(
-        "app.main.fetch_freebies_by_region",
+        "app.main.get_freebies_by_region_service",
         lambda _connection_url, _region=None: {
             "bay_area": [
                 {

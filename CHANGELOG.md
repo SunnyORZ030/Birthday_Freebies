@@ -139,6 +139,10 @@ Refactor metadata structure, add database-backed workflow, and improve maintaina
 - Updated [docs/database-design.md](docs/database-design.md) to match schema/runtime/index status.
 - Updated [docs/local-postgres-docker.md](docs/local-postgres-docker.md) wording and psql command behavior for env-driven credentials.
 
+25. Applied maintainability refinements to backend layering docs/comments and developer setup guidance:
+- Added focused inline comments in [backend/app/main.py](backend/app/main.py), [backend/app/repositories/freebies_repository.py](backend/app/repositories/freebies_repository.py), and [backend/app/services/freebies_service.py](backend/app/services/freebies_service.py) to clarify envelope handling, service validation mapping, tuple-order contracts, and service responsibilities.
+- Updated [README.md](README.md) dependency-install guidance to use `python -m pip install -r requirements.txt` (with virtual-environment reminder) for more reliable interpreter-targeted installs.
+
 ### Compatibility
 1. Localization metadata fallbacks are retained in [assets/scripts/app.js](assets/scripts/app.js) through defaults on `window.BIRTHDAY_FREEBIES_META`.
 2. No data schema break for existing entries in [assets/data/freebies-data.js](assets/data/freebies-data.js).

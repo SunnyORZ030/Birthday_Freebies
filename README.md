@@ -29,7 +29,8 @@ Use this sequence when you want to work on the app locally from a fresh checkout
 ```bash
 cd backend
 npm install
-pip install -r requirements.txt
+# Activate your project virtual environment first, then install Python deps.
+python -m pip install -r requirements.txt
 ```
 
 2. Start the local PostgreSQL container from the repository root.
@@ -87,6 +88,9 @@ Birthday_Freebies/
 			repositories/
 				__init__.py
 				freebies_repository.py
+			services/
+				__init__.py
+				freebies_service.py
 		prisma.config.ts
 		prisma/
 			schema.prisma
@@ -126,6 +130,7 @@ node scripts/add_bilingual_fields.js
 - API runtime is Python/FastAPI in `backend/app/main.py`.
 - DB connection and normalization helpers are in `backend/app/db.py`.
 - SQL query/data-mapping repository functions are in `backend/app/repositories/freebies_repository.py`.
+- Service-level business rules (validation, ordering, locale fallback) are in `backend/app/services/freebies_service.py`.
 - Prisma schema and migrations are in `backend/prisma/`.
 - Prisma-generated client code is written to `backend/src/generated/`.
 - The backend reads its connection string from `backend/.env` via `DATABASE_URL`.

@@ -1,9 +1,10 @@
-from collections import defaultdict
+from datetime import datetime
 
 import psycopg
 
 
-def fetch_regions(connection_url: str) -> list[dict[str, str]]:
+def fetch_region_rows(connection_url: str) -> list[tuple[str, str]]:
+    # Repository layer returns raw rows; shaping happens in the service layer.
     query = """
         SELECT code, name
         FROM regions
@@ -15,18 +16,38 @@ def fetch_regions(connection_url: str) -> list[dict[str, str]]:
             cur.execute(query)
             rows = cur.fetchall()
 
-    return [{"code": code, "name": name} for code, name in rows]
+    return rows
 
 
-def fetch_freebies_by_region(
+def fetch_freebie_rows(
     connection_url: str,
     region: str | None = None,
-) -> dict[str, list[dict[str, str | bool]]]:
+) -> list[
+    # Tuple field order must match the SQL SELECT column order below.
+    tuple[
+        str,
+        str,
+        int,
+        datetime,
+        str | None,
+        str | None,
+        str | None,
+        str | None,
+        str | None,
+        str | None,
+        str | None,
+        str | None,
+        str | None,
+        str | None,
+    ]
+]:
+    # Returns active freebies with both zh/en text columns for service-level fallback logic.
     query = """
         SELECT
             r.code,
             f.category,
             f.sort_order,
+            f.created_at,
             zh.name,
             en.name,
             zh.item,
@@ -47,44 +68,10 @@ def fetch_freebies_by_region(
         ORDER BY r.code ASC, f.sort_order ASC, f.created_at ASC
     """
 
-    grouped: dict[str, list[dict[str, str | bool]]] = defaultdict(list)
-
     with psycopg.connect(connection_url) as conn:
         with conn.cursor() as cur:
+            # Region filter is optional; passing None returns all regions.
             cur.execute(query, (region,))
             rows = cur.fetchall()
 
-    for (
-        region_code,
-        category,
-        _sort_order,
-        zh_name,
-        en_name,
-        zh_item,
-        en_item,
-        zh_member,
-        en_member,
-        zh_window,
-        en_window,
-        zh_note,
-        en_note,
-    ) in rows:
-        # Keep response backward-compatible with current frontend field names.
-        grouped[region_code].append(
-            {
-                "name": zh_name or en_name or "",
-                "name_en": en_name or zh_name or "",
-                "cat": category,
-                "u": False,
-                "item": zh_item or en_item or "",
-                "item_en": en_item or zh_item or "",
-                "member": zh_member or en_member or "",
-                "member_en": en_member or zh_member or "",
-                "window": zh_window or en_window or "",
-                "window_en": en_window or zh_window or "",
-                "note": zh_note or en_note or "",
-                "note_en": en_note or zh_note or "",
-            }
-        )
-
-    return dict(grouped)
+    return rows
