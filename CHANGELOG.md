@@ -110,11 +110,40 @@ Refactor metadata structure, add database-backed workflow, and improve maintaina
 - Ignored `__pycache__/` directories.
 - Ignored `*.pyc` bytecode files.
 
+19. Refactored FastAPI runtime structure for clearer data access boundaries:
+- Added DB connection helper module [backend/app/db.py](backend/app/db.py).
+- Added repository layer [backend/app/repositories/freebies_repository.py](backend/app/repositories/freebies_repository.py).
+- Kept route handlers in [backend/app/main.py](backend/app/main.py) focused on request/response wiring.
+- Added package markers [backend/app/__init__.py](backend/app/__init__.py) and [backend/app/repositories/__init__.py](backend/app/repositories/__init__.py).
+
+20. Added explicit API contract models and standardized error envelopes:
+- Added response/error schemas in [backend/app/contracts.py](backend/app/contracts.py).
+- Added request validation and structured 422/500 error envelopes in [backend/app/main.py](backend/app/main.py).
+- Added `region` query validation for `/api/freebies` (pattern + length constraints).
+
+21. Added API contract documentation and linked it from README:
+- Added [docs/api-contract.md](docs/api-contract.md) for stable response/error/query definitions.
+- Updated [README.md](README.md) to reference the contract document and current runtime architecture.
+
+22. Updated frontend runtime behavior to API-only data loading:
+- Updated [assets/scripts/app.js](assets/scripts/app.js) to treat FastAPI as the only runtime data source.
+- Removed runtime static-data fallback behavior; API failures now render explicit error states.
+- Removed [assets/data/freebies-data.js](assets/data/freebies-data.js) runtime script loading from [index.html](index.html).
+
+23. Added backend API smoke tests for route and contract stability:
+- Added [backend/tests/test_api_smoke.py](backend/tests/test_api_smoke.py).
+- Included validation-contract coverage for invalid `region` requests (`422` envelope).
+- Added test dependencies (`pytest`, `httpx`) in [backend/requirements.txt](backend/requirements.txt).
+
+24. Synced design and environment docs with current implementation details:
+- Updated [docs/database-design.md](docs/database-design.md) to match schema/runtime/index status.
+- Updated [docs/local-postgres-docker.md](docs/local-postgres-docker.md) wording and psql command behavior for env-driven credentials.
+
 ### Compatibility
-1. Backward-safe fallbacks are retained in [index.html](index.html), so missing metadata keys still degrade gracefully.
+1. Localization metadata fallbacks are retained in [assets/scripts/app.js](assets/scripts/app.js) through defaults on `window.BIRTHDAY_FREEBIES_META`.
 2. No data schema break for existing entries in [assets/data/freebies-data.js](assets/data/freebies-data.js).
-3. Page behavior remains unchanged when the API is unavailable because the frontend falls back to static data in [assets/scripts/app.js](assets/scripts/app.js).
+3. Frontend runtime behavior changed intentionally: when the API is unavailable, [assets/scripts/app.js](assets/scripts/app.js) now renders an error state instead of falling back to static data.
 4. Visual behavior remains unchanged after moving styles into [assets/styles/main.css](assets/styles/main.css).
 5. Data shape intentionally changed by removing deprecated `batch`, `cp`, and `dist` fields from runtime records.
 6. Backend Prisma setup is now wired to the local PostgreSQL container and has a working initial migration.
-7. The new API, seed flow, and frontend hydration are compatible with the existing static dataset and can be enabled incrementally.
+7. Seed/import flow remains compatible with [assets/data/freebies-data.js](assets/data/freebies-data.js), but frontend runtime now requires the FastAPI API to be available.

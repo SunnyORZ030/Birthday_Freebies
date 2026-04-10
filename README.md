@@ -1,6 +1,6 @@
 # 🎂 Birthday Freebies Tracker
 
-A curated list of birthday freebies from brands in the Bay Area, with an API-backed frontend that falls back to static data when the backend is offline, plus a PostgreSQL/Prisma backend for local development.
+A curated list of birthday freebies from brands in the Bay Area, with a FastAPI-driven backend on PostgreSQL and Prisma used for schema/migration/seed tooling.
 
 ## Columns
 
@@ -16,7 +16,7 @@ A curated list of birthday freebies from brands in the Bay Area, with an API-bac
 
 Open `index.html` in any browser. Use the filter buttons at the top to sort by category.
 
-When the backend API is running, the page loads data from PostgreSQL first and uses the local JS dataset only as a fallback.
+The page loads runtime data from PostgreSQL through FastAPI.
 
 Currently tracks **~30 brands**, including Starbucks, Sephora, Chipotle, Cheesecake Factory, Dutch Bros, and more.
 
@@ -57,7 +57,7 @@ npm run dev
 5. Open the frontend.
 
 - Open [index.html](index.html) directly in a browser.
-- The frontend will try `http://localhost:3001/api/freebies` first and fall back to the local JS dataset if the API is offline.
+- The frontend uses `http://localhost:3001/api/freebies` as its runtime data source.
 
 6. Optional: inspect the database in Prisma Studio.
 
@@ -81,7 +81,12 @@ Birthday_Freebies/
 			main.css
 	backend/
 		app/
+			__init__.py
+			db.py
 			main.py
+			repositories/
+				__init__.py
+				freebies_repository.py
 		prisma.config.ts
 		prisma/
 			schema.prisma
@@ -89,6 +94,8 @@ Birthday_Freebies/
 			migrations/
 		src/
 			generated/
+		tests/
+			test_api_smoke.py
 		requirements.txt
 		package.json
 		.env
@@ -103,8 +110,8 @@ Birthday_Freebies/
 
 ## Data Maintenance
 
-- The static frontend fallback data lives in `assets/data/freebies-data.js` and `assets/data/i18n-data.js`.
-- The backend API (FastAPI + psycopg) reads directly from PostgreSQL and mirrors the same region-based structure.
+- The frontend runtime data source is FastAPI; the static data files under `assets/data/` are now legacy content sources, not page runtime inputs.
+- The backend API (FastAPI + psycopg) reads directly from PostgreSQL.
 - UI logic lives in `assets/scripts/app.js`.
 - UI styles live in `assets/styles/main.css`.
 - To regenerate bilingual fields for freebie entries, run:
@@ -117,11 +124,14 @@ node scripts/add_bilingual_fields.js
 
 - The backend workspace lives in `backend/`.
 - API runtime is Python/FastAPI in `backend/app/main.py`.
+- DB connection and normalization helpers are in `backend/app/db.py`.
+- SQL query/data-mapping repository functions are in `backend/app/repositories/freebies_repository.py`.
 - Prisma schema and migrations are in `backend/prisma/`.
 - Prisma-generated client code is written to `backend/src/generated/`.
 - The backend reads its connection string from `backend/.env` via `DATABASE_URL`.
 - API endpoint for frontend data: `GET http://localhost:3001/api/freebies`.
 - Regions endpoint: `GET http://localhost:3001/api/regions`.
+- Stable API contract document: `docs/api-contract.md`.
 - Useful commands:
 
 ```bash
@@ -133,13 +143,18 @@ npm run prisma:generate
 npm run prisma:migrate
 npm run db:seed
 npm run prisma:studio
+# API smoke tests
+python -m pytest -q
 ```
 
 Frontend loading behavior:
 
-- Tries backend API first (`http://localhost:3001/api/freebies`).
-- Falls back to static `assets/data/freebies-data.js` automatically if backend is not running.
-- Shows a data-source badge in the UI so you can see whether data came from API or static source.
+- Uses backend API (`http://localhost:3001/api/freebies`) as the runtime data source.
+- Shows a data-source badge in the UI so you can see whether data came from API or whether the API is unavailable.
+
+Backend test skeleton:
+
+- Smoke tests for API route shape live in `backend/tests/test_api_smoke.py`.
 
 ## Import Data Into Database
 

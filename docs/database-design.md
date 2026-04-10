@@ -10,7 +10,8 @@
 
 - Database: PostgreSQL
 - ORM: Prisma
-- Backend: Node.js (current backend workspace)
+- Backend runtime API: Python (FastAPI + psycopg)
+- Backend tooling: Node.js (Prisma CLI, migrations, and seed script)
 
 ## ERD
 
@@ -20,7 +21,7 @@ erDiagram
   FREEBIES ||--o{ FREEBIE_TEXTS : has
 
   REGIONS {
-    uuid id PK
+    text id PK
     string code UK
     string name
     datetime created_at
@@ -28,8 +29,8 @@ erDiagram
   }
 
   FREEBIES {
-    uuid id PK
-    uuid region_id FK
+    text id PK
+    text region_id FK
     string category
     boolean is_active
     int sort_order
@@ -38,8 +39,8 @@ erDiagram
   }
 
   FREEBIE_TEXTS {
-    uuid id PK
-    uuid freebie_id FK
+    text id PK
+    text freebie_id FK
     string locale
     string name
     string item
@@ -98,27 +99,37 @@ Suggested columns:
 
 ## Implemented Constraints
 
-- `regions.code` should be unique.
-- `(freebie_id, locale)` should be unique.
+- `regions.code` is unique.
+- `(freebie_id, locale)` is unique.
+- Foreign keys: `freebies.region_id -> regions.id`, `freebie_texts.freebie_id -> freebies.id`.
 - `category` is currently stored as a plain string; if we want stricter validation later, we can move it to an enum or lookup table.
 
 ## Current Indexes
 
 - `regions.code` unique index
 - `freebie_texts(freebie_id, locale)` unique index
-- Foreign keys on `freebies.region_id` and `freebie_texts.freebie_id`
+
+Note: Foreign key constraints exist on `freebies.region_id` and `freebie_texts.freebie_id`, but no additional non-unique indexes are explicitly created for those columns yet.
 
 ## Possible Future Indexes
 
-- `freebies(region_id)`
-- `freebie_texts(freebie_id)`
-- `freebie_texts(locale)`
-- `freebies(category)`
+Priority order based on current API query patterns:
+
+1. `freebies(region_id, sort_order, created_at)` with `WHERE is_active = TRUE`
+  - Most helpful for `GET /api/freebies`, which filters active rows, groups by region, and orders by sort/time.
+2. `freebies(region_id, is_active)`
+  - Useful if we keep broad list queries and want a simpler index before adding a larger composite/partial index.
+3. `freebies(category)`
+  - Lower priority today (no category filter endpoint yet), but valuable once category-based filtering is added.
+4. `freebie_texts(locale)`
+  - Lower priority for current joins; becomes useful when locale-only queries or locale-level analytics are added.
+
+Note: `freebie_texts(freebie_id)` is not listed separately because the existing unique index `(freebie_id, locale)` already covers lookups by `freebie_id`.
 
 ## Possible Next Step
 
 The schema is already created in `backend/prisma/schema.prisma`. The next step is to:
 
-1. Write a one-time import script from `assets/data/freebies-data.js` into the Prisma-backed database.
-2. Add API endpoints for listing regions and freebies.
-3. Decide whether `category` should stay a free-form string or become a stricter enum later.
+1. Add explicit query-performance indexes after measuring usage patterns (for example: partial index on `freebies(region_id, sort_order, created_at) WHERE is_active = TRUE`, then `freebies(region_id, is_active)`, then `freebies(category)`).
+2. Decide whether `category` should stay a free-form string or become a stricter enum/lookup table.
+3. Add write-side API capabilities (create/update/deactivate freebies) when admin workflows are defined.

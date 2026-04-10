@@ -1,5 +1,5 @@
-// Use region-based static data by default so the page still works without the backend.
-let regionData = window.BIRTHDAY_FREEBIES_DATA_BY_REGION || { bay_area: window.BIRTHDAY_FREEBIES_DATA || [] };
+// Region data is loaded from the FastAPI backend at runtime.
+let regionData = {};
 
 // Load localization dictionaries and value constants from external metadata.
 const meta = window.BIRTHDAY_FREEBIES_META || {};
@@ -10,14 +10,15 @@ const API_BASE_URL = (window.BIRTHDAY_FREEBIES_API_BASE_URL || 'http://localhost
 
 // Runtime state and normalized constants for source values.
 let currentRegion = 'bay_area';
-let data = regionData[currentRegion] || [];
+let data = [];
 let currentLocale = 'en';
-let dataSource = 'static';
+let dataSource = 'loading';
+let loadError = '';
 let apiRegionsByCode = {};
 
 let current = 'all';
 
-// Replace the static dataset with database-backed data when the API is reachable.
+// Load region data from FastAPI when the API is reachable.
 async function hydrateDataFromApi() {
   try {
     const [freebiesResponse, regionsResponse] = await Promise.all([
@@ -53,11 +54,17 @@ async function hydrateDataFromApi() {
     }
 
     regionData = payload.dataByRegion;
+    loadError = '';
     dataSource = 'api';
     return true;
   } catch (error) {
-    console.warn('Using static freebies data because API is unavailable.', error);
-    dataSource = 'static';
+    console.error('FastAPI data source is unavailable.', error);
+    regionData = {};
+    data = [];
+    loadError = currentLocale === 'zh'
+      ? '資料來源無法連線，請先啟動 FastAPI API。'
+      : 'Data source is unavailable. Start the FastAPI API first.';
+    dataSource = 'error';
     return false;
   }
 }
@@ -82,9 +89,13 @@ function regionLabel(regionKey) {
 
 function sourceLabel() {
   if (currentLocale === 'zh') {
-    return dataSource === 'api' ? '資料來源：API（資料庫）' : '資料來源：Static（本地）';
+    if (dataSource === 'api') return '資料來源：API（資料庫）';
+    if (dataSource === 'loading') return '資料來源：載入中...';
+    return '資料來源：API 無法連線';
   }
-  return dataSource === 'api' ? 'Data source: API (database)' : 'Data source: Static (local)';
+  if (dataSource === 'api') return 'Data source: API (database)';
+  if (dataSource === 'loading') return 'Data source: Loading...';
+  return 'Data source: API unavailable';
 }
 
 // Apply translated text and data-source state to the static chrome around the table.
@@ -148,6 +159,13 @@ function initRegions() {
   data = regionData[currentRegion] || [];
 }
 
+// Render an error row when the FastAPI data source is unavailable.
+function renderError(message) {
+  const tbody = document.getElementById('tbody');
+  if (!tbody) return;
+  tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--color-text-tertiary)">${message}</td></tr>`;
+}
+
 // Map internal category code to localized text.
 function catLabel(c) {
   return { food:t('cat_food'), drink:t('cat_drink'), dessert:t('cat_dessert'), beauty:t('cat_beauty') }[c] || c;
@@ -209,7 +227,14 @@ function render() {
 // Boot sequence: detect locale, hydrate data, then initialize labels and table.
 async function boot() {
   currentLocale = detectLocale();
+  applyI18nText();
+  renderError(currentLocale === 'zh' ? '資料載入中...' : 'Loading data...');
   await hydrateDataFromApi();
+  if (dataSource !== 'api') {
+    applyI18nText();
+    renderError(loadError || (currentLocale === 'zh' ? 'FastAPI 無法連線。' : 'FastAPI is unavailable.'));
+    return;
+  }
   applyI18nText();
   initRegions();
   updateAllButtonCount();

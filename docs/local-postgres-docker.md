@@ -4,7 +4,7 @@
 
 Copy `.env.example` to `.env` at the repository root if you want to customize the Docker defaults.
 
-If you are using the Prisma backend, make sure `backend/.env` contains the same `DATABASE_URL` value that points at this local PostgreSQL instance.
+If you are using the FastAPI backend (with Prisma tooling), make sure `backend/.env` contains the same `DATABASE_URL` value that points at this local PostgreSQL instance.
 
 ## 2. Start database
 
@@ -43,7 +43,7 @@ npm run prisma:studio
 ## 7. Useful psql connect command
 
 ```bash
-docker exec -it birthday-freebies-postgres psql -U birthday_user -d birthday_freebies
+docker exec -it birthday-freebies-postgres sh -lc 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"'
 ```
 
 ## Notes

@@ -9,3 +9,9 @@ psycopg[binary]==3.2.13
 
 # Loads environment variables from backend/.env during local development.
 python-dotenv==1.0.1
+
+# Test runner for backend API smoke tests.
+pytest==8.3.5
+
+# Required by FastAPI TestClient in tests.
+httpx==0.28.1
