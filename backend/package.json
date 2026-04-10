@@ -2,14 +2,12 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
   "scripts": {
-    "dev": "tsx src/server.ts",
+    "dev": "../.venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 3001 --reload",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
-    "db:seed": "tsx prisma/seed.ts",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "db:seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",

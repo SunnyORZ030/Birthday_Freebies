@@ -100,6 +100,16 @@ Refactor metadata structure, add database-backed workflow, and improve maintaina
 - [backend/prisma/seed.ts](backend/prisma/seed.ts)
 - [backend/prisma/schema.prisma](backend/prisma/schema.prisma)
 
+17. Migrated the API runtime to Python/FastAPI and cleaned up legacy server files:
+- Added FastAPI server entry at [backend/app/main.py](backend/app/main.py).
+- Added Python dependencies in [backend/requirements.txt](backend/requirements.txt).
+- Updated `npm run dev` to launch uvicorn through the project virtual environment.
+- Removed old Node API entry files [backend/src/server.ts](backend/src/server.ts) and [backend/src/server.js](backend/src/server.js) after validating parity for `/health`, `/api/freebies`, and `/api/regions`.
+
+18. Updated [backend/.gitignore](backend/.gitignore) for Python runtime artifacts:
+- Ignored `__pycache__/` directories.
+- Ignored `*.pyc` bytecode files.
+
 ### Compatibility
 1. Backward-safe fallbacks are retained in [index.html](index.html), so missing metadata keys still degrade gracefully.
 2. No data schema break for existing entries in [assets/data/freebies-data.js](assets/data/freebies-data.js).

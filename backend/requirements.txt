@@ -1,0 +1,11 @@
+# FastAPI framework for defining API routes and response models.
+fastapi==0.115.14
+
+# ASGI server used to run the FastAPI application locally.
+uvicorn==0.34.0
+
+# PostgreSQL driver (binary build) for direct SQL queries from Python.
+psycopg[binary]==3.2.13
+
+# Loads environment variables from backend/.env during local development.
+python-dotenv==1.0.1

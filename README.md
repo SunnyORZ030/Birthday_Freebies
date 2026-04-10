@@ -29,6 +29,7 @@ Use this sequence when you want to work on the app locally from a fresh checkout
 ```bash
 cd backend
 npm install
+pip install -r requirements.txt
 ```
 
 2. Start the local PostgreSQL container from the repository root.
@@ -79,14 +80,16 @@ Birthday_Freebies/
 		styles/
 			main.css
 	backend/
+		app/
+			main.py
 		prisma.config.ts
 		prisma/
 			schema.prisma
 			seed.ts
 			migrations/
 		src/
-			server.ts
 			generated/
+		requirements.txt
 		package.json
 		.env
 	scripts/
@@ -101,7 +104,7 @@ Birthday_Freebies/
 ## Data Maintenance
 
 - The static frontend fallback data lives in `assets/data/freebies-data.js` and `assets/data/i18n-data.js`.
-- The backend API reads from PostgreSQL through Prisma and mirrors the same region-based structure.
+- The backend API (FastAPI + psycopg) reads directly from PostgreSQL and mirrors the same region-based structure.
 - UI logic lives in `assets/scripts/app.js`.
 - UI styles live in `assets/styles/main.css`.
 - To regenerate bilingual fields for freebie entries, run:
@@ -113,6 +116,7 @@ node scripts/add_bilingual_fields.js
 ## Backend / Prisma
 
 - The backend workspace lives in `backend/`.
+- API runtime is Python/FastAPI in `backend/app/main.py`.
 - Prisma schema and migrations are in `backend/prisma/`.
 - Prisma-generated client code is written to `backend/src/generated/`.
 - The backend reads its connection string from `backend/.env` via `DATABASE_URL`.
@@ -122,7 +126,9 @@ node scripts/add_bilingual_fields.js
 
 ```bash
 cd backend
+# FastAPI runtime
 npm run dev
+# Prisma / database tooling
 npm run prisma:generate
 npm run prisma:migrate
 npm run db:seed
@@ -156,7 +162,7 @@ What this does:
 ## Development Notes
 
 - The source of truth for seeded content is `assets/data/freebies-data.js`.
-- The backend API reads from PostgreSQL through Prisma and mirrors the frontend's region-based shape.
+- The backend API is FastAPI-based and reads directly from PostgreSQL, while Prisma is used for schema, migrations, and seed tooling.
 - Re-running `npm run db:seed` is safe; it replaces each region's freebies before reinserting them.
 - If you change the Prisma schema, rerun `npm run prisma:migrate` before seeding.
 - If you change generated Prisma client output, rerun `npm run prisma:generate`.
