@@ -43,6 +43,7 @@ model Freebie {
   sortOrder     Int             @default(0) @map("sort_order")
   // Localized text rows for each supported language.
   texts         FreebieText[]
+  sourceMappings CrawlerPromotedMapping[]
   createdAt     DateTime        @default(now()) @map("created_at")
   updatedAt     DateTime        @updatedAt @map("updated_at")
 
@@ -74,4 +75,40 @@ model FreebieText {
 
   @@unique([freebieId, locale])
   @@map("freebie_texts")
+}
+
+/// Raw crawler payloads before promotion into normalized freebies rows.
+model CrawlerStagingFreebie {
+  id              String   @id @default(uuid())
+  sourceSystem    String   @map("source_system")
+  sourceKey       String   @map("source_key")
+  regionCode      String   @map("region_code")
+  category        String
+  payloadJson     Json     @map("payload_json")
+  contentHash     String   @map("content_hash")
+  fetchedAt       DateTime @map("fetched_at")
+  normalizedAt    DateTime @default(now()) @map("normalized_at")
+  promotedAt      DateTime? @map("promoted_at")
+  promotedFreebieId String? @map("promoted_freebie_id")
+  createdAt       DateTime @default(now()) @map("created_at")
+  updatedAt       DateTime @updatedAt @map("updated_at")
+
+  @@unique([sourceSystem, sourceKey])
+  @@map("crawler_staging_freebies")
+}
+
+/// Stable mapping from crawler source-key records to promoted freebie IDs.
+model CrawlerPromotedMapping {
+  id            String   @id @default(uuid())
+  sourceSystem  String   @map("source_system")
+  sourceKey     String   @map("source_key")
+  freebieId     String   @map("freebie_id")
+  freebie       Freebie  @relation(fields: [freebieId], references: [id], onDelete: Cascade)
+  contentHash   String   @map("content_hash")
+  lastPromotedAt DateTime @default(now()) @map("last_promoted_at")
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([sourceSystem, sourceKey])
+  @@map("crawler_promoted_mappings")
 }

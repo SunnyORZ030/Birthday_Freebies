@@ -83,23 +83,32 @@ Birthday_Freebies/
 	backend/
 		app/
 			__init__.py
+			crawlers/
+				__init__.py
+				starbucks_crawler.py
 			db.py
 			main.py
 			repositories/
 				__init__.py
 				freebies_repository.py
+				ingestion_repository.py
 			services/
 				__init__.py
 				freebies_service.py
+				starbucks_ingestion_service.py
 		prisma.config.ts
 		prisma/
 			schema.prisma
 			seed.ts
 			migrations/
+		scripts/
+			ingest_starbucks.py
 		src/
 			generated/
 		tests/
+			test_api_integration_read.py
 			test_api_smoke.py
+			test_ingestion_starbucks.py
 			test_api_write.py
 		requirements.txt
 		package.json
@@ -117,7 +126,8 @@ Birthday_Freebies/
 
 - The frontend runtime data source is FastAPI; the static data files under `assets/data/` are now legacy content sources, not page runtime inputs.
 - The backend API (FastAPI + psycopg) reads directly from PostgreSQL.
-- Day-to-day content changes should go through the FastAPI write endpoints or `npm run sync:freebies`.
+- Day-to-day content changes should go through the FastAPI write endpoints, `npm run sync:freebies`, or crawler ingestion jobs.
+- Crawler ingestion uses a stage-and-promote flow: crawl -> normalize payload -> upsert staging row -> promote changed records.
 - UI logic lives in `assets/scripts/app.js`.
 - UI styles live in `assets/styles/main.css`.
 
@@ -128,6 +138,9 @@ Birthday_Freebies/
 - DB connection and normalization helpers are in `backend/app/db.py`.
 - SQL query/data-mapping repository functions are in `backend/app/repositories/freebies_repository.py`.
 - Service-level business rules (validation, ordering, locale fallback) are in `backend/app/services/freebies_service.py`.
+- Crawler parsing logic lives in `backend/app/crawlers/`.
+- Ingestion persistence helpers for staging/mapping tables are in `backend/app/repositories/ingestion_repository.py`.
+- Starbucks PoC ingestion orchestration lives in `backend/app/services/starbucks_ingestion_service.py`.
 - Prisma schema and migrations are in `backend/prisma/`.
 - Prisma-generated client code is written to `backend/src/generated/`.
 - The backend reads its connection string from `backend/.env` via `DATABASE_URL`.
@@ -150,6 +163,8 @@ npm run prisma:studio
 python -m pytest -q
 # Sync source data through the write API
 npm run sync:freebies -- --dry-run
+# Run Starbucks crawler PoC (crawl -> staging -> promote)
+npm run ingest:starbucks
 ```
 
 Frontend loading behavior:
@@ -161,6 +176,8 @@ Backend tests:
 
 - Read-contract smoke tests live in `backend/tests/test_api_smoke.py`.
 - Write-flow tests live in `backend/tests/test_api_write.py`.
+- DB-backed read integration tests live in `backend/tests/test_api_integration_read.py`.
+- Crawler ingestion idempotency test lives in `backend/tests/test_ingestion_starbucks.py`.
 
 ## Import Data Into Database
 
@@ -203,6 +220,8 @@ What this does:
 - `assets/data/freebies-data.js` is the current import source for seed and sync workflows, not the runtime frontend source.
 - The backend API is FastAPI-based and reads directly from PostgreSQL, while Prisma is used for schema, migrations, and bootstrap tooling.
 - Re-running `npm run db:seed` is safe for resets, but normal content maintenance should use the write API or `npm run sync:freebies`.
+- Starbucks crawler PoC can be run with `npm run ingest:starbucks`; unchanged payload reruns are idempotent and do not duplicate promoted freebies.
+- Ingestion staging and mapping tables (`crawler_staging_freebies`, `crawler_promoted_mappings`) track source payloads and promotion lineage.
 - If you change the Prisma schema, rerun `npm run prisma:migrate` before seeding.
 - If you change generated Prisma client output, rerun `npm run prisma:generate`.
 - If you add new region data, seed it first for bootstrap or sync it through the write API so the frontend dropdown can discover it from `/api/regions`.

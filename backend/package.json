@@ -4,6 +4,7 @@
   "description": "",
   "scripts": {
     "dev": "../.venv/bin/python -m uvicorn app.main:app --host 0.0.0.0 --port 3001 --reload",
+    "ingest:starbucks": "../.venv/bin/python scripts/ingest_starbucks.py",
     "prisma:generate": "prisma generate",
     "prisma:migrate": "prisma migrate dev",
     "prisma:studio": "prisma studio",
