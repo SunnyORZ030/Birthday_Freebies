@@ -13,6 +13,7 @@ from app.contracts import (
     FreebieUpdateRequest,
     FreebiesResponse,
     HealthResponse,
+    IngestionHealthResponse,
     RegionsResponse,
 )
 from app.db import get_connection_url
@@ -24,6 +25,7 @@ from app.services.freebies_service import (
     update_freebie_service,
     FreebieCreationError,
 )
+from app.services.starbucks_watch_service import get_starbucks_watch_health
 
 # Main API app used by uvicorn.
 app = FastAPI(title="Birthday Freebies API")
@@ -99,6 +101,26 @@ async def handle_unexpected_error(_request: Request, _exc: Exception) -> JSONRes
 @app.get("/health", response_model=HealthResponse)
 def health() -> HealthResponse:
     return HealthResponse(ok=True)
+
+
+@app.get(
+    "/health/ingestion/starbucks",
+    response_model=IngestionHealthResponse,
+    responses={500: {"model": ErrorResponse}},
+)
+def health_ingestion_starbucks() -> IngestionHealthResponse:
+    health = get_starbucks_watch_health(get_connection_url())
+    return IngestionHealthResponse(
+        source=str(health["source"]),
+        status=str(health["status"]),
+        is_stale=bool(health["is_stale"]),
+        consecutive_failures=int(health["consecutive_failures"]),
+        last_checked_at=health["last_checked_at"].isoformat() if health["last_checked_at"] else None,
+        last_success_at=health["last_success_at"].isoformat() if health["last_success_at"] else None,
+        last_changed_at=health["last_changed_at"].isoformat() if health["last_changed_at"] else None,
+        last_error=str(health["last_error"]) if health["last_error"] else None,
+        stale_after_minutes=int(health["stale_after_minutes"]),
+    )
 
 
 # Regions endpoint used by the frontend region dropdown.

@@ -36,6 +36,7 @@ Stabilize FastAPI data platform, expand contract testing, and introduce crawler-
 	- empty-result contract checks.
 - Added write-flow coverage in [backend/tests/test_api_write.py](backend/tests/test_api_write.py).
 - Added crawler-ingestion idempotency coverage in [backend/tests/test_ingestion_starbucks.py](backend/tests/test_ingestion_starbucks.py) to verify reruns do not duplicate promoted freebies.
+- Added watcher service unit coverage in [backend/tests/test_starbucks_watch_service.py](backend/tests/test_starbucks_watch_service.py) for conditional fetch behavior, retry flow, and webhook alert trigger.
 - Revalidated post-upgrade stability with full backend suite green (`16 passed`).
 
 #### Ingestion
@@ -52,6 +53,10 @@ Stabilize FastAPI data platform, expand contract testing, and introduce crawler-
 	- `crawler_promoted_mappings`
 	in [backend/prisma/schema.prisma](backend/prisma/schema.prisma) and [backend/prisma/migrations/20260410153000_add_crawler_staging_and_mappings/migration.sql](backend/prisma/migrations/20260410153000_add_crawler_staging_and_mappings/migration.sql).
 - Added runnable ingestion entrypoint [backend/scripts/ingest_starbucks.py](backend/scripts/ingest_starbucks.py) and command `npm run ingest:starbucks` in [backend/package.json](backend/package.json).
+- Added freshness watch service in [backend/app/services/starbucks_watch_service.py](backend/app/services/starbucks_watch_service.py) with conditional requests (ETag/Last-Modified), body-hash change detection, retry backoff, and optional webhook alerts.
+- Added source-state persistence in [backend/app/repositories/ingestion_repository.py](backend/app/repositories/ingestion_repository.py) and new table `crawler_source_states` via [backend/prisma/schema.prisma](backend/prisma/schema.prisma) and [backend/prisma/migrations/20260416090000_add_crawler_source_states/migration.sql](backend/prisma/migrations/20260416090000_add_crawler_source_states/migration.sql).
+- Added one-shot watch runner [backend/scripts/watch_starbucks.py](backend/scripts/watch_starbucks.py) and command `npm run watch:starbucks` in [backend/package.json](backend/package.json).
+- Added ingestion freshness health endpoint `/health/ingestion/starbucks` in [backend/app/main.py](backend/app/main.py).
 
 #### Docs
 

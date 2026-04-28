@@ -112,3 +112,23 @@ model CrawlerPromotedMapping {
   @@unique([sourceSystem, sourceKey])
   @@map("crawler_promoted_mappings")
 }
+
+/// Watch-state snapshot for crawler source freshness and failure tracking.
+model CrawlerSourceState {
+  id                  String    @id @default(uuid())
+  sourceSystem        String    @map("source_system")
+  sourceKey           String    @map("source_key")
+  etag                String?
+  lastModified        String?   @map("last_modified")
+  lastCheckedAt       DateTime? @map("last_checked_at")
+  lastSuccessAt       DateTime? @map("last_success_at")
+  lastChangedAt       DateTime? @map("last_changed_at")
+  lastContentHash     String?   @map("last_content_hash")
+  consecutiveFailures Int       @default(0) @map("consecutive_failures")
+  lastError           String?   @map("last_error")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  @@unique([sourceSystem, sourceKey])
+  @@map("crawler_source_states")
+}

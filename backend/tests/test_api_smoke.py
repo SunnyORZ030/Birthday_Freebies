@@ -12,6 +12,38 @@ def test_health_ok() -> None:
     assert response.json() == {"ok": True}
 
 
+def test_health_ingestion_starbucks_shape(monkeypatch) -> None:
+    monkeypatch.setattr("app.main.get_connection_url", lambda: "postgresql://placeholder")
+    monkeypatch.setattr(
+        "app.main.get_starbucks_watch_health",
+        lambda _connection_url: {
+            "source": "starbucks",
+            "status": "ok",
+            "is_stale": False,
+            "consecutive_failures": 0,
+            "last_checked_at": None,
+            "last_success_at": None,
+            "last_changed_at": None,
+            "last_error": None,
+            "stale_after_minutes": 30,
+        },
+    )
+
+    response = client.get("/health/ingestion/starbucks")
+    assert response.status_code == 200
+    assert response.json() == {
+        "source": "starbucks",
+        "status": "ok",
+        "is_stale": False,
+        "consecutive_failures": 0,
+        "last_checked_at": None,
+        "last_success_at": None,
+        "last_changed_at": None,
+        "last_error": None,
+        "stale_after_minutes": 30,
+    }
+
+
 def test_regions_shape(monkeypatch) -> None:
     monkeypatch.setattr("app.main.get_connection_url", lambda: "postgresql://placeholder")
     monkeypatch.setattr(

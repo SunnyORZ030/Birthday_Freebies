@@ -9,6 +9,20 @@ class HealthResponse(BaseModel):
     ok: bool
 
 
+class IngestionHealthResponse(BaseModel):
+    """Response shape for crawler ingestion freshness status."""
+
+    source: str
+    status: str
+    is_stale: bool
+    consecutive_failures: int
+    last_checked_at: str | None
+    last_success_at: str | None
+    last_changed_at: str | None
+    last_error: str | None
+    stale_after_minutes: int
+
+
 # ========== Write Request/Response Contracts ==========
 
 

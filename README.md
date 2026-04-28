@@ -83,6 +83,7 @@ Birthday_Freebies/
 	backend/
 		app/
 			__init__.py
+			contracts.py
 			crawlers/
 				__init__.py
 				starbucks_crawler.py
@@ -96,6 +97,7 @@ Birthday_Freebies/
 				__init__.py
 				freebies_service.py
 				starbucks_ingestion_service.py
+				starbucks_watch_service.py
 		prisma.config.ts
 		prisma/
 			schema.prisma
@@ -103,6 +105,7 @@ Birthday_Freebies/
 			migrations/
 		scripts/
 			ingest_starbucks.py
+			watch_starbucks.py
 		src/
 			generated/
 		tests/
@@ -110,6 +113,7 @@ Birthday_Freebies/
 			test_api_smoke.py
 			test_ingestion_starbucks.py
 			test_api_write.py
+			test_starbucks_watch_service.py
 		requirements.txt
 		package.json
 		.env
@@ -165,6 +169,8 @@ python -m pytest -q
 npm run sync:freebies -- --dry-run
 # Run Starbucks crawler PoC (crawl -> staging -> promote)
 npm run ingest:starbucks
+# Run Starbucks freshness watch once (conditional fetch + retry + alert)
+npm run watch:starbucks
 ```
 
 Frontend loading behavior:
@@ -178,6 +184,7 @@ Backend tests:
 - Write-flow tests live in `backend/tests/test_api_write.py`.
 - DB-backed read integration tests live in `backend/tests/test_api_integration_read.py`.
 - Crawler ingestion idempotency test lives in `backend/tests/test_ingestion_starbucks.py`.
+- Watcher service unit tests live in `backend/tests/test_starbucks_watch_service.py`.
 
 ## Import Data Into Database
 
@@ -221,10 +228,25 @@ What this does:
 - The backend API is FastAPI-based and reads directly from PostgreSQL, while Prisma is used for schema, migrations, and bootstrap tooling.
 - Re-running `npm run db:seed` is safe for resets, but normal content maintenance should use the write API or `npm run sync:freebies`.
 - Starbucks crawler PoC can be run with `npm run ingest:starbucks`; unchanged payload reruns are idempotent and do not duplicate promoted freebies.
+- Starbucks freshness watcher can be run with `npm run watch:starbucks`; it sends conditional requests (`If-None-Match` / `If-Modified-Since`) and only promotes when source content changes.
 - Ingestion staging and mapping tables (`crawler_staging_freebies`, `crawler_promoted_mappings`) track source payloads and promotion lineage.
 - If you change the Prisma schema, rerun `npm run prisma:migrate` before seeding.
 - If you change generated Prisma client output, rerun `npm run prisma:generate`.
 - If you add new region data, seed it first for bootstrap or sync it through the write API so the frontend dropdown can discover it from `/api/regions`.
+
+Starbucks watch env vars (optional):
+
+- `STARBUCKS_INGEST_REGION`: target region code (default: `bay_area`)
+- `STARBUCKS_WATCH_MAX_RETRIES`: retries per run (default: `3`)
+- `STARBUCKS_WATCH_BACKOFF_SECONDS`: comma-separated backoff list (default: `60,300,900`)
+- `STARBUCKS_WATCH_STALE_AFTER_MINUTES`: freshness threshold for health status (default: `30`)
+- `STARBUCKS_WATCH_ALERT_FAILURE_THRESHOLD`: consecutive failures before alerting (default: `2`)
+- `STARBUCKS_ALERT_WEBHOOK_URL`: optional webhook URL for failure alerts
+
+Health endpoint for watch status:
+
+- `GET /health/ingestion/starbucks`
+- Returns latest check timestamp, last success timestamp, consecutive failures, and stale flag.
 
 ## Local PostgreSQL (Docker)
 
@@ -268,7 +290,7 @@ Detailed setup guide: [docs/local-postgres-docker.md](docs/local-postgres-docker
 
 ## Data Source
 
-Based on each brand's official Rewards program terms, last updated March 2026.
+Based on each brand's official Rewards program terms, last updated April 2026.
 
 ## Disclaimer
 

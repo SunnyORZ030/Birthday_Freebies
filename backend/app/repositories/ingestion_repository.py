@@ -35,6 +35,23 @@ def ensure_ingestion_tables(connection_url: str) -> None:
             updated_at TIMESTAMP NOT NULL DEFAULT now(),
             UNIQUE (source_system, source_key)
         );
+
+        CREATE TABLE IF NOT EXISTS crawler_source_states (
+            id TEXT PRIMARY KEY DEFAULT gen_random_uuid()::text,
+            source_system TEXT NOT NULL,
+            source_key TEXT NOT NULL,
+            etag TEXT,
+            last_modified TEXT,
+            last_checked_at TIMESTAMP,
+            last_success_at TIMESTAMP,
+            last_changed_at TIMESTAMP,
+            last_content_hash TEXT,
+            consecutive_failures INT NOT NULL DEFAULT 0,
+            last_error TEXT,
+            updated_at TIMESTAMP NOT NULL DEFAULT now(),
+            created_at TIMESTAMP NOT NULL DEFAULT now(),
+            UNIQUE (source_system, source_key)
+        );
     """
 
     with psycopg.connect(connection_url) as conn:
@@ -167,4 +184,106 @@ def mark_staging_promoted(
     with psycopg.connect(connection_url) as conn:
         with conn.cursor() as cur:
             cur.execute(query, (freebie_id, source_system, source_key))
+        conn.commit()
+
+
+def fetch_source_state(
+    connection_url: str,
+    *,
+    source_system: str,
+    source_key: str,
+) -> dict[str, object] | None:
+    query = """
+        SELECT
+            etag,
+            last_modified,
+            last_checked_at,
+            last_success_at,
+            last_changed_at,
+            last_content_hash,
+            consecutive_failures,
+            last_error
+        FROM crawler_source_states
+        WHERE source_system = %s AND source_key = %s
+    """
+
+    with psycopg.connect(connection_url) as conn:
+        with conn.cursor() as cur:
+            cur.execute(query, (source_system, source_key))
+            row = cur.fetchone()
+
+    if not row:
+        return None
+
+    return {
+        "etag": row[0],
+        "last_modified": row[1],
+        "last_checked_at": row[2],
+        "last_success_at": row[3],
+        "last_changed_at": row[4],
+        "last_content_hash": row[5],
+        "consecutive_failures": row[6],
+        "last_error": row[7],
+    }
+
+
+def upsert_source_state(
+    connection_url: str,
+    *,
+    source_system: str,
+    source_key: str,
+    etag: str | None,
+    last_modified: str | None,
+    last_checked_at: datetime | None,
+    last_success_at: datetime | None,
+    last_changed_at: datetime | None,
+    last_content_hash: str | None,
+    consecutive_failures: int,
+    last_error: str | None,
+) -> None:
+    query = """
+        INSERT INTO crawler_source_states (
+            source_system,
+            source_key,
+            etag,
+            last_modified,
+            last_checked_at,
+            last_success_at,
+            last_changed_at,
+            last_content_hash,
+            consecutive_failures,
+            last_error,
+            updated_at
+        )
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, now())
+        ON CONFLICT (source_system, source_key)
+        DO UPDATE SET
+            etag = EXCLUDED.etag,
+            last_modified = EXCLUDED.last_modified,
+            last_checked_at = EXCLUDED.last_checked_at,
+            last_success_at = EXCLUDED.last_success_at,
+            last_changed_at = EXCLUDED.last_changed_at,
+            last_content_hash = EXCLUDED.last_content_hash,
+            consecutive_failures = EXCLUDED.consecutive_failures,
+            last_error = EXCLUDED.last_error,
+            updated_at = now()
+    """
+
+    with psycopg.connect(connection_url) as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                query,
+                (
+                    source_system,
+                    source_key,
+                    etag,
+                    last_modified,
+                    last_checked_at,
+                    last_success_at,
+                    last_changed_at,
+                    last_content_hash,
+                    consecutive_failures,
+                    last_error,
+                ),
+            )
         conn.commit()
