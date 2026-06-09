@@ -10,7 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Initial project setup and structure
 - Tech stack selection and documentation
-  - Backend: FastAPI, Python 3.9+, PostgreSQL, SQLAlchemy (async), Alembic
+  - Backend: FastAPI, Python 3.11, PostgreSQL, SQLAlchemy (async), Alembic
   - Frontend: React 18+, TypeScript, Vite, Tailwind CSS
   - DevOps: Docker, Docker Compose, GitHub Actions
 - Project README with overview and roadmap

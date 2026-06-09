@@ -21,7 +21,7 @@ Birthday Freebies is a platform designed to help people in the United States fin
 
 ### Backend
 - **Framework**: FastAPI
-- **Language**: Python 3.9+
+- **Language**: Python 3.11
 - **Database**: PostgreSQL
 - **ORM**: SQLAlchemy (async) with Alembic migrations
 - **Authentication**: JWT (JSON Web Tokens)
@@ -74,7 +74,7 @@ Birthday_Freebies/
 ## Getting Started
 
 ### Prerequisites
-- Python 3.9+
+- Python 3.11
 - Node.js 16+
 - npm or yarn
 - Docker (optional)
