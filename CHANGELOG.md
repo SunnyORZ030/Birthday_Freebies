@@ -2,5 +2,7 @@
 
 ## [Unreleased]
 
-### Initial Setup
-- Fresh start of the project
+### Fresh Start
+- Clean repository reset
+- Removed all old project files
+- Ready for new development
