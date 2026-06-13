@@ -1,4 +1,6 @@
-users
+## Initial Database Design
+
+### users
 - id: UUID, Primary Key
 - email: VARCHAR(255), Unique, Not Null
 - password_hash: VARCHAR(255), Not Null
@@ -8,7 +10,7 @@ users
 - created_at: TIMESTAMP, Not Null
 - updated_at: TIMESTAMP, Not Null
 
-restaurants
+### restaurants
 - id: UUID, Primary Key
 - name: VARCHAR(255), Not Null
 - website_url: TEXT, Nullable
@@ -17,7 +19,7 @@ restaurants
 - created_at: TIMESTAMP, Not Null
 - updated_at: TIMESTAMP, Not Null
 
-offers
+### offers
 - id: UUID, Primary Key
 - restaurant_id: UUID, Foreign Key → restaurants.id, Not Null
 - title: VARCHAR(255), Not Null
@@ -30,9 +32,35 @@ offers
 - created_at: TIMESTAMP, Not Null
 - updated_at: TIMESTAMP, Not Null
 
-favorites
+### favorites
 - id: UUID, Primary Key
 - user_id: UUID, Foreign Key → users.id, Not Null
 - offer_id: UUID, Foreign Key → offers.id, Not Null
 - created_at: TIMESTAMP, Not Null
 - Unique constraint: user_id + offer_id
+
+
+## Initial API Endpoints
+
+### Offers
+
+- `GET /api/v1/offers`
+- `GET /api/v1/offers/{offer_id}`
+
+### Restaurants
+
+- `GET /api/v1/restaurants`
+- `GET /api/v1/restaurants/{restaurant_id}`
+- `GET /api/v1/restaurants/{restaurant_id}/offers`
+
+### Auth
+
+- `POST /api/v1/auth/register`
+- `POST /api/v1/auth/login`
+- `GET /api/v1/auth/me`
+
+### Favorites
+
+- `GET /api/v1/favorites`
+- `POST /api/v1/favorites/{offer_id}`
+- `DELETE /api/v1/favorites/{offer_id}`
