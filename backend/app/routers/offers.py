@@ -1,27 +1,10 @@
 from fastapi import APIRouter, HTTPException
+from backend.app.data.fake_offers import fake_offers
 
 router = APIRouter(
     prefix = "/api/v1/offers",
     tags = ["offers"],
 )
-
-fake_offers = [
-    {
-        "id" : 1,
-        "restaurant_name" : "Starbucks",
-        "title" : "Free Birthday drink",
-        "descreption" : "Get your free drinks on your birthday.",
-        "offer_type" : "drink",
-        "is_active" : True,
-    },
-    {
-        "id" : 2,
-        "restaurant_name" : "Denny's",
-        "title" : "Get a free Grand Slam breakfast on your birthday.",
-        "offer_type" : "meal",
-        "is_active" : True,
-    },
-]
 
 @router.get("/")
 def get_ffers():
